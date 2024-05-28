@@ -102,29 +102,118 @@ return {
     --
     compile = function(source_file)
 
+        local path = source_file:match("(.*/)")
+
         function os.capture(cmd, raw)
             local f = assert(io.popen(cmd, 'r'))
             local s = assert(f:read('*a'))
-            f:close()
+            local status = f:close()
             if raw then return s end
             s = string.gsub(s, '^%s+', '')
             s = string.gsub(s, '%s+$', '')
             s = string.gsub(s, '[\n\r]+', ' ')
-            return s
+            return s, status
         end
+
+        -- run compiler
 
         local vasm = "./vasm/vasmz80_oldstyle"
         if os.capture('uname') == "Darwin" then vasm = vasm .. "_macos" end
 
-        local stdout = os.capture(vasm .. " -chklabels -L listing.txt -Llo -ignore-mult-inc -nosym -x -Fbin -o rom.bin " .. source_file .. " 2>stderr.txt")
+        local stdout, status = os.capture(vasm .. " -chklabels -L /tmp/listing.txt -Llo -ignore-mult-inc -nosym -x -Fbin -o /tmp/rom.bin " .. source_file .. " 2>/tmp/stderr.txt")
 
+        -- get compiler output
 
+        local ret = {
+            source_lines = {},
+            symbols = {},
+        }
+        ret.success = status
+        ret.result_info = stdout
 
+        local f = assert(io.open("/tmp/stderr.txt", "r"))
+        ret.error = f:read("*all")
+        f:close()
 
+        if status then
 
-        -- os.remove("listing.txt")
+            -- read generated binary
+
+            f = assert(io.open("/tmp/rom.bin", "rb"))
+            local rom = f:read("*all")
+            local bytes = {}
+            for c in (rom or ''):gmatch('.') do
+                bytes[#bytes+1] = c:byte()
+            end
+            ret.binaries = { { rom = bytes, load_pos = 0 } }
+
+            -- read listing file
+
+            local files = {}
+            local current_file = ''
+            local current_file_idx = 0
+
+            f = assert(io.open("/tmp/listing.txt", "r"));
+            for line in f:lines() do
+
+                -- new file?
+                local source = line:match('^Source: "(.+)"')
+                if source then
+                    current_file = source
+                    -- find file index
+                    current_file_idx = 0
+                    for i,v in ipairs(files) do
+                        if v == source then current_file_idx = i end
+                    end
+                    if current_file_idx == 0 then
+                        table.insert(files, source)
+                        current_file_idx = #files
+                    end
+                end
+
+                -- source line
+                local addr, line_nr, text = line:match("^%x+:(%x+)%s+%x*%s+(%d+):(.+)")
+                if not addr then
+                    line_nr, text = line:match("^%s+(%d+):(.+)")
+                end
+                if line_nr then
+                    local s = { line = text, line_number = tonumber(line_nr), file_idx = current_file_idx }
+                    if addr then s.address = tonumber(addr, 16) end
+                    table.insert(ret.source_lines, s)
+                end
+
+                -- symbols
+                local addr, symbol = line:match("^(%x+)%s+(.*)")
+                if addr then
+                    table.insert(ret.symbols, { name = symbol, address = tonumber(addr, 16) })
+                end
+
+            end
+            f:close()
+
+            -- files
+            ret.files_to_watch = {}
+            for _,v in ipairs(files) do
+                if string.find(v, "/") then
+                    table.insert(ret.files_to_watch, v)
+                else
+                    table.insert(ret.files_to_watch, path .. v:match("([^/]+)$"))
+                end
+            end
+            ret.files = {}
+            for _,v in ipairs(files) do
+                table.insert(ret.files, v:match("([^/]+)$"))
+            end
+
+        end
+
+        -- remove generated files
+
+        os.remove("listing.txt")
         os.remove("stderr.txt")
         os.remove("rom.bin")
+
+        return ret
     end
 
 }

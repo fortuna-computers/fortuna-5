@@ -1,3 +1,5 @@
+    include nop.asm
+
     nop
-stop:
-    jr  halt
+stp:
+    jr  stp
