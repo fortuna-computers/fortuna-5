@@ -101,21 +101,30 @@ return {
     -- }
     --
     compile = function(source_file)
-        -- we're gonna fake a compilation here (see rom/echo.asm)
-        return {
-            success = true,
-            result_info = "Compilation successful",
-            files = { "echo.asm" },
-            source_lines = {
-                { line = "in          ; 00: 01        read input from keyboard and place it in A",      file_idx=1, line_number=1, address=0x0 },
-                { line = "bz 0        ; 01: 02 00     if A == 0, jump to address 0 (start of program)", file_idx=1, line_number=2, address=0x1 },
-                { line = "out         ; 03: 03        print whatever character is in A",                file_idx=1, line_number=3, address=0x3 },
-                { line = "jp  0       ; 04: 04 00     jump to address 0 (start of program)",            file_idx=1, line_number=4, address=0x4 }
-            },
-            binaries = {
-                { rom = { 0x1, 0x2, 0x0, 0x3, 0x4, 0x0 }, load_pos = 0 },
-            },
-        }
+
+        function os.capture(cmd, raw)
+            local f = assert(io.popen(cmd, 'r'))
+            local s = assert(f:read('*a'))
+            f:close()
+            if raw then return s end
+            s = string.gsub(s, '^%s+', '')
+            s = string.gsub(s, '%s+$', '')
+            s = string.gsub(s, '[\n\r]+', ' ')
+            return s
+        end
+
+        local vasm = "./vasm/vasmz80_oldstyle"
+        if os.capture('uname') == "Darwin" then vasm = vasm .. "_macos" end
+
+        local stdout = os.capture(vasm .. " -chklabels -L listing.txt -Llo -ignore-mult-inc -nosym -x -Fbin -o rom.bin " .. source_file .. " 2>stderr.txt")
+
+
+
+
+
+        -- os.remove("listing.txt")
+        os.remove("stderr.txt")
+        os.remove("rom.bin")
     end
 
 }

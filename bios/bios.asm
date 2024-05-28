@@ -1,0 +1,3 @@
+    nop
+stop:
+    jr  halt
