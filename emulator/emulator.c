@@ -1,109 +1,139 @@
 #include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
 
 #include "libfdbg-server.h"
+#include "z80/Z80.h"
 
-static uint8_t* ram;
-static uint16_t pc = 0;
-static uint8_t a = 0;
-static bool z = false;
+static FdbgServer server_;
+static uint8_t bank = 0;
+static uint8_t ram[8][64 * 1024];
+static Z80 z80;
 static uint8_t next_char = 0;
 
 fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 {
     (void) server;
 
-    fdbg_ComputerStatus cstatus = fdbg_ComputerStatus_init_zero;
-    cstatus.pc = pc;
-    cstatus.registers_count = 1;
-    cstatus.registers[0] = a;
-    cstatus.flags_count = 1;
-    cstatus.flags[0] = z;
-    return cstatus;
+    fdbg_ComputerStatus status = fdbg_ComputerStatus_init_zero;
+
+    status.pc = z80.PC.W;
+
+    status.registers_count = 12;
+    status.registers[0] = z80.AF.W;
+    status.registers[1] = z80.BC.W;
+    status.registers[2] = z80.DE.W;
+    status.registers[3] = z80.HL.W;
+    status.registers[4] = z80.AF1.W;
+    status.registers[5] = z80.BC1.W;
+    status.registers[6] = z80.DE1.W;
+    status.registers[7] = z80.HL1.W;
+    status.registers[8] = z80.IX.W;
+    status.registers[9] = z80.IY.W;
+    status.registers[10] = z80.SP.W;
+    status.registers[11] = z80.I;
+
+    status.flags_count = 6;
+    status.flags[0] = z80.AF.W & (1 >> 7);
+    status.flags[1] = z80.AF.W & (1 >> 6);
+    status.flags[2] = z80.AF.W & (1 >> 4);
+    status.flags[3] = z80.AF.W & (1 >> 2);
+    status.flags[4] = z80.AF.W & (1 >> 1);
+    status.flags[5] = z80.AF.W & (1 >> 0);
+
+    status.stack.size = STACK_SZ;
+    for (size_t i = 0; i < STACK_SZ; ++i)
+        status.stack.bytes[i] = ram[bank][(uint16_t) (z80.SP.W - i)];
+
+    return status;
 }
 
 void reset(FdbgServer* server)
 {
     (void) server;
 
-    pc = 0;
+    ResetZ80(&z80);
 }
 
 void on_keypress(FdbgServer* server, const char* key)
 {
-    (void) server;
+    (void) server; (void) key;
 
     next_char = key[0];
 }
 
 uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
 {
-    (void) server; (void) full;
+    (void) server; (void) full; (void) status;
 
-    switch (ram[pc]) {
-        case 0x1:  // IN
-            a = next_char;
-            next_char = 0;
-            ++pc;
-            break;
-        case 0x2:  // BZ
-            if (a == 0)
-                pc = ram[pc+1];
-            else
-                pc += 2;
-            break;
-        case 0x3:  // OUT
-            if (a != 0) {
-                char text[] = { a, '\0' };
-                fdbg_server_terminal_print(server, text);
-                a = 0;
-            }
-            ++pc;
-            break;
-        case 0x4:  // JP
-            pc = ram[pc+1];
-            break;
-        default:
-            if (status)
-                *status = fdbg_Status_CPU_INVALID_INSTRUCTION;
-    }
-
-    return pc;
+    RunZ80(&z80);
+    return z80.PC.W;
 }
 
 uint64_t next_instruction(FdbgServer* server)
 {
     (void) server;
-    return step(server, true, NULL);
+    return step(server, true, NULL);   // TODO
 }
 
 bool write_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t* data, uint8_t sz, uint64_t* first_failed)
 {
-    (void) server;
-    (void) first_failed;
+    (void) server; (void) nr; (void) first_failed;
 
     for (size_t i = 0; i < sz; ++i)
-        ram[pos + i] = data[i];
+        ram[bank][pos + i] = data[i];
 
     return true;
 }
 
 void read_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t sz, uint8_t* out_data)
 {
-    (void) server;
+    (void) server; (void) nr;
 
     for (size_t i = 0; i < sz; ++i)
-        out_data[i] = ram[pos + i];
+        out_data[i] = ram[bank][pos + i];
+}
+
+void WrZ80(word Addr,byte Value)
+{
+    ram[bank][Addr] = Value;
+}
+
+byte RdZ80(word Addr)
+{
+    return ram[bank][Addr];
+}
+
+void OutZ80(word Port,byte Value)
+{
+    if (Port == 0) {
+        char text[2] = { (char) Value, 0 };
+        fdbg_server_terminal_print(&server_, text);
+    }
+}
+
+byte InZ80(word Port)
+{
+    if (Port == 0) {
+        uint8_t r = next_char;
+        next_char = 0;
+        return r;
+    }
+    return 0;
+}
+
+word LoopZ80(Z80 *R)
+{
+    (void) R;
+    return INT_QUIT;
+}
+
+void PatchZ80(Z80 *R)
+{
+    (void) R;
 }
 
 int main()
 {
-    FdbgServer server;
-    fdbg_server_init_pc(&server, 0x8f42, EMULATOR_BAUD_RATE);
-
-    ram = calloc(1, 512);
+    fdbg_server_init_pc(&server_, 0x6ab9, EMULATOR_BAUD_RATE);
 
     FdbgServerEvents events = {
             .get_computer_status = get_computer_status,
@@ -116,7 +146,7 @@ int main()
     };
 
     for (;;) {
-        fdbg_server_next(&server, &events);
+        fdbg_server_next(&server_, &events);
         fdbg_die_if_parent_dies();
     }
 }

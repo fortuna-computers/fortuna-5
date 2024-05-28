@@ -1,7 +1,8 @@
 # Emulator
 
-- [ ] Setup f-debugger
-- [ ] Write base emulator
+- [x] Setup f-debugger
+- [x] Write base emulator
+- [ ] Serial I/O
 
 # Computer
 
@@ -12,6 +13,8 @@
   - [ ] Ack
   - [ ] RAM
   - [ ] CPU
+- [ ] Serial I/O (debugger)
+- [ ] Serial I/O (real hardware)
      
 # I/O board
 

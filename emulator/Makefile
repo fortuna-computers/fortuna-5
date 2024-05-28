@@ -10,8 +10,8 @@ endif
 
 all: f5-emulator
 
-f5-emulator: emulator.o
+f5-emulator: emulator.o z80/Z80.o
 	$(CC) -o $@ $^ ${LDFLAGS}
 
 clean:
-	rm -f emulator.o s-emulator
+	rm -f emulator.o f5-emulator

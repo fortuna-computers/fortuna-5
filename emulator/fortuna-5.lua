@@ -7,10 +7,10 @@ return {
 
         -- Machine ID. Can by any 16-bit value, it's used to check if the debugger is
         -- connected to the right emulator. Needs to match the emulator id.
-        id = 0x8f42,
+        id = 0x6ab9,
 
         -- Machine name
-        name = "Sample"
+        name = "Fortuna-5"
 
     },
 
@@ -27,21 +27,32 @@ return {
         -- a SDCard or a hard drive. The size is the full addressable memory space, and not
         -- just the physical size.
         memories = {
-            { name = "RAM", size = 512 },
+            { name = "RAM", size = 64 * 1024 },
         },
 
         -- List of registers. The register count and order must match the list of register
         -- values that is returned by the emulator/computer.
         registers = {
-            { name = "A", size = 8 },
+            { name = "AF", size = 16 },
+            { name = "BC", size = 16 },
+            { name = "DE", size = 16 },
+            { name = "HL", size = 16 },
+            { name = "AF'", size = 16 },
+            { name = "BC'", size = 16 },
+            { name = "DE'", size = 16 },
+            { name = "HL'", size = 16 },
+            { name = "IX", size = 16 },
+            { name = "IY", size = 16 },
+            { name = "SP", size = 16 },
+            { name = "I", size = 8 },
         },
 
         -- List of boolean flags. The flag count and order must match the list of flags
         -- that is returned by the emulator/computer.
-        flags = { "Z" },
+        flags = { "S", "Z", "H", "P/V", "N", "C" },
 
         -- The terminal size
-        terminal = { lines = 20, columns = 40 },
+        terminal = { lines = 25, columns = 80 },
 
         -- These fields are used to setup the cycle interface - when we want to debug
         -- CPU cycles.
