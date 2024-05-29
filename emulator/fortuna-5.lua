@@ -102,6 +102,8 @@ return {
     --
     compile = function(source_file)
 
+        print("Starting compilation...")
+
         local path = source_file:match("(.*/)")
 
         function os.capture(cmd, raw)
@@ -212,6 +214,20 @@ return {
         os.remove("listing.txt")
         os.remove("stderr.txt")
         os.remove("rom.bin")
+
+        local function dump(o)
+            if type(o) == 'table' then
+                local s = '{ '
+                for k,v in pairs(o) do
+                    if type(k) ~= 'number' then k = '"'..k..'"' end
+                    s = s .. '['..k..'] = ' .. dump(v) .. ','
+                end
+                return s .. '} '
+            else
+                return tostring(o)
+            end
+        end
+        print(dump(ret))
 
         return ret
     end
