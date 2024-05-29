@@ -9,7 +9,7 @@ SERIAL_PORT=$(shell findserial.py 1a86 7523)
 PROJECT=fortuna5-dbg
 
 # Object files (one for each source file)
-OBJECTS=main.o \
+OBJECTS=main.o uart.o \
        	fdbg/pb_common.o fdbg/pb_encode.o fdbg/pb_decode.o fdbg/protobuf/to-computer.nanopb.o \
 	fdbg/protobuf/to-debugger.nanopb.o fdbg/libfdbg-server.o
 
@@ -36,7 +36,7 @@ CC=avr-gcc
 CXX=avr-g++
 WARNINGS=-Wall -Wextra \
 	 -Wformat=2 -Wno-unused-parameter -Wshadow \
-	 -Wwrite-strings -Wshadow -pedantic -Wstrict-aliasing \
+	 -Wwrite-strings -Wshadow -Wstrict-aliasing \
 	 -Wredundant-decls -Wmissing-include-dirs -Wlogical-op -Wno-array-bounds
 CPPFLAGS=-I. -Ifdbg -Ifdbg/protobuf -DMICROCONTROLLER=1 -Os -DF_CPU=${F_CPU} -DBAUD=${BAUD} -DBAUD_TOL=${BAUD_TOL} -mmcu=${MCU_GCC} -ffunction-sections -fdata-sections -mcall-prologues ${WARNINGS}
 CXXFLAGS=-std=c++17
