@@ -2,13 +2,16 @@
 # Configuration
 #
 
+UC_SRC=/usr/local/src/fdbg/microcontroller
 SERIAL_PORT=$(shell findserial.py 1a86 7523)
 
 # Project name
 PROJECT=fortuna5-dbg
 
 # Object files (one for each source file)
-OBJECTS=main.o
+OBJECTS=main.o \
+       	fdbg/pb_common.o fdbg/pb_encode.o fdbg/pb_decode.o fdbg/protobuf/to-computer.nanopb.o \
+	fdbg/protobuf/to-debugger.nanopb.o fdbg/libfdbg-server.o
 
 # Avrdude configuration to connect on the PI. See avrdude.conf.
 AVRDUDE_CONFIG=wiring
@@ -29,14 +32,20 @@ BAUD_TOL=3       # error tolerance
 #
 
 AVRDUDE_FLAGS=-p ${MCU_AVRDUDE} -c ${AVRDUDE_CONFIG} -b 115200 -D -V -P ${SERIAL_PORT}
+CC=avr-gcc
 CXX=avr-g++
 WARNINGS=-Wall -Wextra \
 	 -Wformat=2 -Wno-unused-parameter -Wshadow \
 	 -Wwrite-strings -Wshadow -pedantic -Wstrict-aliasing \
 	 -Wredundant-decls -Wmissing-include-dirs -Wlogical-op -Wno-array-bounds
-CXXFLAGS=-std=c++17 ${WARNINGS} -Os -DF_CPU=${F_CPU} -DBAUD=${BAUD} -DBAUD_TOL=${BAUD_TOL} -mmcu=${MCU_GCC} -ffunction-sections -fdata-sections -mcall-prologues
+CPPFLAGS=-I. -Ifdbg -Ifdbg/protobuf -DMICROCONTROLLER=1 -Os -DF_CPU=${F_CPU} -DBAUD=${BAUD} -DBAUD_TOL=${BAUD_TOL} -mmcu=${MCU_GCC} -ffunction-sections -fdata-sections -mcall-prologues ${WARNINGS}
+CXXFLAGS=-std=c++17
 
-all: ${PROJECT}.hex
+all: FORCE ${PROJECT}.hex
+
+FORCE:
+	@mkdir -p fdbg
+	cp -R ${UC_SRC}/* fdbg
 
 ${PROJECT}.hex: ${PROJECT}.elf
 	avr-objcopy -j .text -j .data -O ihex -R .eeprom $< $@
