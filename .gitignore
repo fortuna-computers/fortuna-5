@@ -32,3 +32,6 @@
 *.app
 
 f5-emulator
+fortuna-5-backups
+\#auto_saved_files\#
+*.kicad_sch.lck
