@@ -1,7 +1,8 @@
 #include "uart.h"
+#include "libfdbg-server.h"
 
+#include <avr/interrupt.h>
 #include <avr/io.h>
-#include <util/delay.h>
 #include <util/setbaud.h>
 
 void uart_init()
@@ -11,7 +12,7 @@ void uart_init()
     UBRR0L = UBRRL_VALUE;
 
     // set config
-    UCSR0C = (1<<UCSZ01) | (1<<UCSZ00);   // async mode
+    UCSR0C = (1<<UCSZ01) | (1<<UCSZ00);   // 8-bit
     UCSR0B = (1<<RXEN0) | (1<<TXEN0);     // Enable Receiver and Transmitter
 
 #if USE_2X
@@ -29,7 +30,8 @@ void uart_write_byte(uint8_t byte)
 
 uint16_t uart_read_byte_async()
 {
-    if (!bit_is_set(UCSR0A, RXC0))
-        return (uint16_t) -1;
-    return UDR0;
+    if (bit_is_set(UCSR0A, RXC0))
+        return UDR0;
+    else
+        return SERIAL_NO_DATA;
 }

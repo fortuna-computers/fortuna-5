@@ -1,9 +1,10 @@
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 #include "libfdbg-server.h"
 #include "uart.h"
 
-FdbgServer server;
+FdbgServer server_;
 
 static fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 {
@@ -52,14 +53,21 @@ static void write_byte(FdbgServer* server, uint8_t data)
 
 int main()
 {
-    _delay_ms(100);
     uart_init();
+
+    /*
+    for (;;) {
+        uint16_t c = uart_read_byte_async();
+        if (c != SERIAL_NO_DATA)
+            uart_write_byte(c);
+    }
+     */
 
     FdbgServerIOCallbacks cb = {
             .write_byte = write_byte,
             .read_byte_async = read_byte_async,
     };
-    fdbg_server_init(&server, 0x6ab9, cb);
+    fdbg_server_init(&server_, 0x6ab9, cb);
 
     FdbgServerEvents events = {
             .get_computer_status = get_computer_status,
@@ -71,5 +79,5 @@ int main()
             // .on_keypress = on_keypress,
     };
     for (;;)
-        fdbg_server_next(&server, &events);
+        fdbg_server_next(&server_, &events);
 }
