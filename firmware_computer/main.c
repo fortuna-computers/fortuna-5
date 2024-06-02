@@ -3,6 +3,7 @@
 
 #include "libfdbg-server.h"
 #include "uart.h"
+#include "bus.h"
 
 FdbgServer server_;
 
@@ -54,6 +55,7 @@ static void write_byte(FdbgServer* server, uint8_t data)
 
 int main()
 {
+    bus_init();
     uart_init();
 
     /*
