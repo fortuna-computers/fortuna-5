@@ -19,15 +19,15 @@ void     bus_init();
 void     bus_set_reset(bool v);
 
 void     bus_data_control(ControlMode mode);
-uint8_t  bus_data_read();
-void     bus_data_write(uint8_t data);
+uint8_t  bus_data_get();
+void     bus_data_set(uint8_t data);
 
 void     bus_addr_control(ControlMode mode);
-uint16_t bus_addr_read();
-void     bus_addr_write(uint16_t addr);
+uint16_t bus_addr_get();
+void     bus_addr_set(uint16_t addr);
 
 void     bus_mem_control(ControlMode mode);
-MemPins  bus_mem_read();
-void     bus_mem_write(MemPins pins);
+MemPins  bus_mem_get();
+void     bus_mem_set(MemPins pins);
 
 #endif
