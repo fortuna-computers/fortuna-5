@@ -53,8 +53,10 @@ void bus_mem_control(ControlMode mode)
 {
     if (mode == WRITE) {
         DDRC |= (1<<DDC2) | (1<<DDC3) | (1<<DDC4);
+        bus_mem_write((MemPins) { 1, 1, 1 });
     } else {
         DDRC &= ~(1<<DDC2) | ~(1<<DDC3) | ~(1<<DDC4);
+        bus_mem_write((MemPins) { 1, 1, 1 });
     }
 }
 

@@ -8,17 +8,16 @@ client:set_debugging_level('trace')
 client:connect("/dev/cu.usbserial-1120", 115200)
 client:ack(0x6ab9)
 
-local ram = {
-    client:read_memory(0, 0, 8),
-    client:read_memory(0, 0, 8),
-}
-
-for _,r in ipairs(ram) do
-    for _,v in ipairs(r) do
-        io.write(v .. " ")
-    end
-    io.write("\n")
+for _,r in ipairs(client:read_memory(0, 0, 8)) do
+    io.write(r .. " ")
 end
+io.write("\n")
 
+client:write_memory(0, 0, { 1, 2, 3 })
+
+for _,r in ipairs(client:read_memory(0, 0, 8)) do
+    io.write(r .. " ")
+end
+io.write("\n")
 
 print("== Done! ==")

@@ -3,6 +3,7 @@
 
 #include "libfdbg-server.h"
 #include "uart.h"
+#include "ram.h"
 #include "bus.h"
 
 FdbgServer server_;
@@ -30,12 +31,23 @@ static uint64_t next_instruction(FdbgServer* server)
 
 static bool write_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t* data, uint8_t sz, uint64_t* first_failed)
 {
+    (void) server;
+    (void) nr;
+    (void) first_failed;
+
+    for (size_t i = 0; i < sz; ++i)
+        ram_set(pos + i, data[i]);
+
     return true;
 }
 
 static void read_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t sz, uint8_t* out_data)
 {
-    out_data[0] = 64;
+    (void) server;
+    (void) nr;
+
+    for (size_t i = 0; i < sz; ++i)
+        out_data[i] = ram_get(pos + i);
 }
 
 static uint16_t read_byte_async(FdbgServer* server)
