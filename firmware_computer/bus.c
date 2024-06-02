@@ -20,6 +20,8 @@ void bus_set_reset(bool v)
 void bus_data_control(ControlMode mode)
 {
     DDRA = (mode == READ) ? 0x0 : 0xff;
+    if (mode == READ)
+        DDRA = 0;
 }
 
 uint8_t bus_data_get()
@@ -36,6 +38,10 @@ void bus_addr_control(ControlMode mode)
 {
     DDRF = (mode == READ) ? 0x0 : 0xff;
     DDRK = (mode == READ) ? 0x0 : 0xff;
+    if (mode == READ) {
+        DDRF = 0;
+        DDRK = 0;
+    }
 }
 
 uint16_t bus_addr_get()
