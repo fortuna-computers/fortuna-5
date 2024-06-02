@@ -34,6 +34,7 @@ static bool write_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t* 
 
 static void read_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t sz, uint8_t* out_data)
 {
+    out_data[0] = 64;
 }
 
 static uint16_t read_byte_async(FdbgServer* server)
