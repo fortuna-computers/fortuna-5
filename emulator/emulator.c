@@ -1,4 +1,6 @@
 #include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "libfdbg-server.h"
 #include "z80/Z80.h"
@@ -133,6 +135,10 @@ void PatchZ80(Z80 *R)
 
 int main()
 {
+    srand(time(NULL));
+    for (size_t i = 0; i < 64 * 1024; ++i)
+        ram[0][i] = rand();
+
     fdbg_server_init_pc(&server_, 0x6ab9, EMULATOR_BAUD_RATE);
 
     FdbgServerEvents events = {

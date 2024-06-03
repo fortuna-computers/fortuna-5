@@ -2,12 +2,19 @@
 package.cpath = package.cpath .. ";../../fortuna-debugger/?.so"
 local fdbg = require 'fdbg_client'
 
-local client = fdbg.new()
-client:load_user_definition("../fortuna-5.lua")
-client:set_debugging_level('trace')
-client:connect("/dev/cu.usbserial-1120", 115200)
-client:ack(0x6ab9)
+local real_hardware = true
 
+local client = fdbg.new()
+client:set_debugging_level('trace')
+client:load_user_definition("../fortuna-5.lua")
+if real_hardware then
+    client:connect("/dev/cu.usbserial-1120", 115200)
+else
+    local port = client.start_emulator("../emulator/f5-emulator")
+    client:connect(port)
+end
+
+client:ack(0x6ab9)
 print('Ack')
 
 function print_list(v)
@@ -16,8 +23,8 @@ function print_list(v)
     io.flush()
 end
 
-for _ = 1,10 do
-    print_list(client:read_memory(0, 0x3333, 4))
+for _ = 1,2 do
+    print_list(client:read_memory(0, 0x1, 1))
 end
 
 --[[
