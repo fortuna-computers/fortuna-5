@@ -39,8 +39,8 @@ void bus_addr_control(ControlMode mode)
     DDRF = (mode == READ) ? 0x0 : 0xff;
     DDRK = (mode == READ) ? 0x0 : 0xff;
     if (mode == READ) {
-        DDRF = 0;
-        DDRK = 0;
+        PORTF = 0;
+        PORTK = 0;
     }
 }
 
@@ -51,8 +51,8 @@ uint16_t bus_addr_get()
 
 void bus_addr_set(uint16_t addr)
 {
-    PINK = (addr >> 8);
-    PINF = (uint8_t) addr;
+    PORTK = (uint8_t) (addr >> 8);
+    PORTF = (uint8_t) addr;
 }
 
 void bus_mem_control(ControlMode mode)

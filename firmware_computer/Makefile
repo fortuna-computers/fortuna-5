@@ -45,7 +45,16 @@ all: FORCE ${PROJECT}.hex
 
 FORCE:
 	@mkdir -p fdbg
+ifdef FDEBUGGER_PATH
+	@mkdir -p fdbg/protobuf
+	cp -R ${FDEBUGGER_PATH}/src/library/server/*.[ch] \
+		  ${FDEBUGGER_PATH}/src/library/common/common.h \
+		  ${FDEBUGGER_PATH}/src/contrib/nanopb/*.[ch] \
+		  fdbg
+	cp -R  ${FDEBUGGER_PATH}/src/library/protobuf/*.nanopb.[ch] fdbg/protobuf
+else
 	cp -R ${UC_SRC}/* fdbg
+endif
 
 ${PROJECT}.hex: ${PROJECT}.elf
 	avr-objcopy -j .text -j .data -O ihex -R .eeprom $< $@
@@ -71,5 +80,6 @@ talk:
 
 clean:
 	rm -f ${OBJECTS} ${PROJECT}.elf ${PROJECT}.hex
+	rm -rf fdbg
 
 # vim: set ts=8 sts=8 sw=8 noexpandtab:

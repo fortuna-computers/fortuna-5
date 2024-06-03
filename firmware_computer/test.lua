@@ -5,7 +5,7 @@ local fdbg = require 'fdbg_client'
 local real_hardware = true
 
 local client = fdbg.new()
-client:set_debugging_level('trace')
+-- client:set_debugging_level('trace')
 client:load_user_definition("../fortuna-5.lua")
 if real_hardware then
     client:connect("/dev/cu.usbserial-1120", 115200)
@@ -23,9 +23,11 @@ function print_list(v)
     io.flush()
 end
 
-for _ = 1,2 do
-    print_list(client:read_memory(0, 0x1, 1))
-end
+print_list(client:read_memory(0, 0x1, 16))
+
+client:write_memory(0, 0, { 1, 2, 3, 4, 5 })
+
+print_list(client:read_memory(0, 0x1, 16))
 
 --[[
 for _,r in ipairs(client:read_memory(0, 0, 8)) do
