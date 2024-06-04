@@ -9,5 +9,6 @@ void z80_cycle();
 void z80_release_bus();
 uint16_t z80_reset();
 uint16_t z80_single_step();
+uint16_t z80_full_step();
 
 #endif

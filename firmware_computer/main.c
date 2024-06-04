@@ -12,6 +12,8 @@ uint16_t pc = 0;
 
 static fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 {
+    (void) server;
+
     fdbg_ComputerStatus status = fdbg_ComputerStatus_init_zero;
     status.pc = pc;
     return status;
@@ -19,6 +21,8 @@ static fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 
 static void reset(FdbgServer* server)
 {
+    (void) server;
+
     pc = z80_reset();
 }
 
@@ -66,11 +70,14 @@ static uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
 {
     (void) server;
 
-    pc = z80_single_step();
+    if (full)
+        pc = z80_full_step();
+    else
+        pc = z80_single_step();
     return pc;
 }
 
-static uint64_t next_instruction(FdbgServer* server)
+static uint64_t next_instruction(FdbgServer* server, bool* is_subroutine)
 {
     return 0;
 }

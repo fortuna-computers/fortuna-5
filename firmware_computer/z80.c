@@ -56,7 +56,17 @@ uint16_t z80_single_step()
 
     z80_cycle();
 
-    // TODO - check previous instruction
+    // when calling a Z80 combined instruction, a second step must be made
+    static uint8_t previous_instruction = 0x00;
+    bool combined_instruction = (previous_instruction == 0xcb || previous_instruction == 0xdd || previous_instruction == 0xed || previous_instruction == 0xfd);
+    previous_instruction = bus_data_get();
+    if (combined_instruction)
+        z80_single_step();
 
     return pc;
+}
+
+uint16_t z80_full_step()
+{
+    return 0;
 }
