@@ -5,8 +5,10 @@
 #include "uart.h"
 #include "ram.h"
 #include "bus.h"
+#include "z80.h"
 
 FdbgServer server_;
+uint16_t pc = 0;
 
 static fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 {
@@ -17,6 +19,47 @@ static fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 
 static void reset(FdbgServer* server)
 {
+    z80_reset();
+}
+
+static fdbg_CycleResponse cycle(FdbgServer* server)
+{
+    z80_cycle();
+
+    fdbg_CycleResponse cycle = fdbg_CycleResponse_init_zero;
+
+    cycle.bytes_count = 2;
+    if (bus_iorq_get() == 0 || bus_mem_get().mreq == 0) {
+        cycle.bytes[0].has = true;
+        cycle.bytes[1].has = true;
+        cycle.bytes[0].value = bus_addr_get();
+        cycle.bytes[1].value = bus_data_get();
+    } else {
+        cycle.bytes[0].has = false;
+        cycle.bytes[1].has = false;
+    }
+
+    MemPins mp = bus_mem_get();
+    bool m1 = bus_m1_get();
+
+    cycle.bits_count = 12;
+    cycle.bits[0] = bus_nmi_get();
+    cycle.bits[1] = bus_int_get();
+    cycle.bits[2] = m1;
+    cycle.bits[3] = bus_halt_get();
+    cycle.bits[4] = bus_wait_get();
+    cycle.bits[5] = mp.mreq;
+    cycle.bits[6] = mp.wr;
+    cycle.bits[7] = mp.rd;
+    cycle.bits[8] = bus_iorq_get();
+    cycle.bits[9] = bus_busrq_get();
+    cycle.bits[10] = bus_busak_get();
+    cycle.bits[11] = bus_reset_get();
+
+    if (mp.mreq == 0 && m1 == 0)
+        cycle.pc = bus_addr_get();
+
+    return cycle;
 }
 
 static uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
@@ -69,6 +112,7 @@ int main()
 {
     bus_init();
     uart_init();
+    z80_init();
 
     /*
     for (;;) {
@@ -91,6 +135,7 @@ int main()
             .write_memory = write_memory,
             .read_memory = read_memory,
             .next_instruction = next_instruction,
+            .cycle = cycle,
             // .on_keypress = on_keypress,
     };
     for (;;)

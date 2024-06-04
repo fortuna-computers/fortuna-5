@@ -2,7 +2,7 @@
 
 #include <avr/io.h>
 
-#define SET(port, pin, value) { if (value) PORT ## port = (1<<pin); else PORT ## port &= ~(1<<pin); }
+#define SET(port, pin, value) { if (value) { PORT ## port |= (1<<pin); } else { PORT ## port &= ~(1<<pin); } }
 
 void bus_init()
 {
@@ -10,11 +10,6 @@ void bus_init()
     DDRG = (1<<DDG2);    // SCLK_ENA
     DDRB = (1<<DDB0) | (1<<DDB4) | (1<<DDB5);   // CS0..2
     DDRC = (1<<DDC0) | (1<<DDC1) | (1<<DDC5) | (1<<DDC6);   // NMI, INT, BUSRQ, CWAIT
-}
-
-void bus_set_reset(bool v)
-{
-    SET(H, 6, v)
 }
 
 void bus_data_control(ControlMode mode)
@@ -61,7 +56,7 @@ void bus_mem_control(ControlMode mode)
         DDRC |= (1<<DDC2) | (1<<DDC3) | (1<<DDC4);
         bus_mem_set((MemPins) {1, 1, 1});
     } else {
-        DDRC &= ~(1<<DDC2) | ~(1<<DDC3) | ~(1<<DDC4);
+        DDRC &= ~((1<<DDC2) | (1<<DDC3) | (1<<DDC4));
         bus_mem_set((MemPins) {1, 1, 1});
     }
 }
@@ -70,9 +65,9 @@ MemPins bus_mem_get()
 {
     uint8_t c = PINC;
     return (MemPins) {
-        .mreq = c & (1<<PINC4),
-        .wr = c & (1<<PINC3),
-        .rd = c & (1<<PINC2),
+        .mreq = (c & (1<<PINC4)) != 0,
+        .wr = (c & (1<<PINC3)) != 0,
+        .rd = (c & (1<<PINC2)) != 0,
     };
 }
 
@@ -82,3 +77,20 @@ void bus_mem_set(MemPins pins)
     SET(C, 3, pins.wr)
     SET(C, 4, pins.mreq)
 }
+
+bool bus_busak_get() { return PINH & (1<<PINH0); }
+bool bus_m1_get()    { return PIND & (1<<PIND1); }
+bool bus_wait_get()  { return PIND & (1<<PIND2); }
+bool bus_halt_get()  { return PIND & (1<<PIND3); }
+bool bus_reset_get() { return PINL & (1<<PINL7); }
+bool bus_nmi_get()   { return PINC & (1<<PINC0); }
+bool bus_int_get()   { return PINC & (1<<PINC1); }
+bool bus_iorq_get()  { return PIND & (1<<PIND0); }
+bool bus_busrq_get() { return PINC & (1<<PINC5); }
+
+void bus_reset_set(bool v) { SET(L, 7, v) }
+void bus_nmi_set(bool v)   { SET(C, 0, v) }
+void bus_int_set(bool v)   { SET(C, 1, v) }
+void bus_clk_set(bool v)   { SET(L, 1, v) }
+void bus_busrq_set(bool v) { SET(C, 5, v) }
+void bus_wait_set(bool v)  { SET(D, 2, v) }

@@ -56,13 +56,11 @@ return {
 
         -- These fields are used to setup the cycle interface - when we want to debug
         -- CPU cycles.
-        --[[
         cycle_bytes = {
             { name = "ADDR", size = 16 },
             { name = "DATA", size = 8 },
         },
-        cycle_bits = { "R", "XY" },
-        ]]
+        cycle_bits = { "NMI", "INT", "M1", "HALT", "WAIT", "MREQ", "WR", "RD", "IORQ", "BUSRQ", "BUSAK", "RESET" },
     },
 
     --

@@ -23,9 +23,17 @@ function print_list(v)
     io.flush()
 end
 
-print_list(client:read_memory(0, 0x1, 16))
+local ram1 = client:read_memory(0, 0x1, 16)
+local ram2 = client:read_memory(0, 0x1, 16)
 
-client:write_memory(0, 0, { 1, 2, 3, 4, 5 })
+print_list(ram1)
+print_list(ram2)
+
+print()
+print("Writing RAM...")
+local write = { math.random(0, 255), math.random(0, 255), math.random(0, 255), math.random(0, 255) }
+print_list(write)
+client:write_memory(0, 1, write)
 
 print_list(client:read_memory(0, 0x1, 16))
 
