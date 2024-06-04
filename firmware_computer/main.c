@@ -7,8 +7,8 @@
 #include "bus.h"
 #include "z80.h"
 
-FdbgServer server_;
-uint16_t pc = 0;
+static FdbgServer server_;
+static uint16_t pc = 0;
 
 static fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 {
@@ -79,6 +79,8 @@ static uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
 
 static uint64_t next_instruction(FdbgServer* server, bool* is_subroutine)
 {
+    // return z80_next_instruction_size(is_subroutine) + pc;
+    *is_subroutine = false;
     return 0;
 }
 

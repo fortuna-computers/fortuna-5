@@ -2,8 +2,11 @@
 
 #include <stdint.h>
 #include <avr/cpufunc.h>
+#include <stddef.h>
 
 #include "bus.h"
+
+static uint8_t last_op = 0;
 
 void z80_init()
 {
@@ -53,6 +56,7 @@ uint16_t z80_single_step()
         z80_cycle();
 
     uint16_t pc = bus_addr_get();
+    last_op = bus_data_get();
 
     z80_cycle();
 
@@ -61,12 +65,31 @@ uint16_t z80_single_step()
     bool combined_instruction = (previous_instruction == 0xcb || previous_instruction == 0xdd || previous_instruction == 0xed || previous_instruction == 0xfd);
     previous_instruction = bus_data_get();
     if (combined_instruction)
-        z80_single_step();
+        pc = z80_single_step();
 
     return pc;
 }
 
 uint16_t z80_full_step()
 {
+    return 0;
+}
+
+uint8_t z80_next_instruction_size()
+{
+    static const uint8_t CALL_OPS[] = { 0xC4, 0xCC, 0xCD, 0xD4, 0xDC, 0xE4, 0xEC, 0xF4, 0xFC };  // TODO - move this to PROGMEM
+    static const uint8_t RST_OPS[] = { 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF };
+
+    for (size_t i = 0; i < sizeof(CALL_OPS); ++i) {
+        if (last_op == CALL_OPS[i]) {
+            return 3;
+        }
+    }
+    for (size_t i = 0; i < sizeof(RST_OPS); ++i) {
+        if (last_op == RST_OPS[i]) {
+            return 1;
+        }
+    }
+
     return 0;
 }

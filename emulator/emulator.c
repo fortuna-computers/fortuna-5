@@ -8,6 +8,7 @@
 static FdbgServer server_;
 static uint8_t bank = 0;
 static uint8_t ram[8][64 * 1024];
+static uint8_t next_op = 0;
 static Z80 z80;
 static uint8_t next_char = 0;
 
@@ -67,13 +68,32 @@ uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
     (void) server; (void) full; (void) status;
 
     RunZ80(&z80);
+    next_op = ram[bank][z80.PC.W];
+
     return z80.PC.W;
 }
 
-uint64_t next_instruction(FdbgServer* server)
+bool next_instruction(FdbgServer* server, ADDR_TYPE* addr)
 {
     (void) server;
-    return step(server, true, NULL);   // TODO
+
+    static const uint8_t CALL_OPS[] = { 0xC4, 0xCC, 0xCD, 0xD4, 0xDC, 0xE4, 0xEC, 0xF4, 0xFC };
+    static const uint8_t RST_OPS[] = { 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF };
+
+    for (size_t i = 0; i < sizeof(CALL_OPS); ++i) {
+        if (next_op == CALL_OPS[i]) {
+            *addr = 3;
+            return true;
+        }
+    }
+    for (size_t i = 0; i < sizeof(RST_OPS); ++i) {
+        if (next_op == RST_OPS[i]) {
+            *addr = 1;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool write_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t* data, uint8_t sz, uint64_t* first_failed)
