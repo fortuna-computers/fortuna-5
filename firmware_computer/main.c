@@ -77,11 +77,15 @@ static uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
     return pc;
 }
 
-static uint64_t next_instruction(FdbgServer* server, bool* is_subroutine)
+static bool next_instruction(FdbgServer* server, ADDR_TYPE* addr)
 {
-    // return z80_next_instruction_size(is_subroutine) + pc;
-    *is_subroutine = false;
-    return 0;
+    uint8_t sz = z80_next_instruction_size();
+    if (sz == 0) {
+        return false;
+    } else {
+        *addr = pc + sz;
+        return true;
+    }
 }
 
 static bool write_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t* data, uint8_t sz, uint64_t* first_failed)

@@ -82,13 +82,13 @@ bool next_instruction(FdbgServer* server, ADDR_TYPE* addr)
 
     for (size_t i = 0; i < sizeof(CALL_OPS); ++i) {
         if (next_op == CALL_OPS[i]) {
-            *addr = 3;
+            *addr = z80.PC.W + 3;
             return true;
         }
     }
     for (size_t i = 0; i < sizeof(RST_OPS); ++i) {
         if (next_op == RST_OPS[i]) {
-            *addr = 1;
+            *addr = z80.PC.W + 1;
             return true;
         }
     }

@@ -94,7 +94,7 @@ typedef struct _fdbg_ToComputer {
         fdbg_Step step; /* response: ComputerStatus */
         fdbg_Breakpoint breakpoint; /* response: breakpoint list */
         fdbg_Run run; /* response: status ok */
-        fdbg_Next next; /* response: status ok */
+        fdbg_Next next; /* response: RunStatus */
         fdbg_GetRunStatus get_run_status; /* response: RunStatus */
         fdbg_Pause pause; /* response: ComputerStatus */
     } message;

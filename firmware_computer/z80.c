@@ -6,7 +6,7 @@
 
 #include "bus.h"
 
-static uint8_t last_op = 0;
+static uint8_t next_op = 0;
 
 void z80_init()
 {
@@ -56,7 +56,7 @@ uint16_t z80_single_step()
         z80_cycle();
 
     uint16_t pc = bus_addr_get();
-    last_op = bus_data_get();
+    next_op = bus_data_get();
 
     z80_cycle();
 
@@ -81,12 +81,12 @@ uint8_t z80_next_instruction_size()
     static const uint8_t RST_OPS[] = { 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF };
 
     for (size_t i = 0; i < sizeof(CALL_OPS); ++i) {
-        if (last_op == CALL_OPS[i]) {
+        if (next_op == CALL_OPS[i]) {
             return 3;
         }
     }
     for (size_t i = 0; i < sizeof(RST_OPS); ++i) {
-        if (last_op == RST_OPS[i]) {
+        if (next_op == RST_OPS[i]) {
             return 1;
         }
     }

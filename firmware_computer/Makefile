@@ -79,7 +79,7 @@ talk:
 	screen ${SERIAL_PORT} ${BAUD}
 
 clean:
-	rm -f ${OBJECTS} ${PROJECT}.elf ${PROJECT}.hex
+	rm -f *.o ${PROJECT}.elf ${PROJECT}.hex
 	rm -rf fdbg
 
 # vim: set ts=8 sts=8 sw=8 noexpandtab:
