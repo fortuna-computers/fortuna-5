@@ -4,10 +4,11 @@
 #include <util/delay.h>
 
 #include "bus.h"
+#include "z80.h"
 
 void ram_set(uint16_t pos, uint8_t data)
 {
-    // TODO - check for Z80 bus
+    z80_release_bus();
 
     // check if data is already set
     uint8_t current_data = ram_get(pos);
@@ -33,7 +34,7 @@ void ram_set(uint16_t pos, uint8_t data)
 
 uint8_t ram_get(uint16_t pos)
 {
-    // TODO - check for Z80 bus
+    z80_release_bus();
 
     bus_addr_control(WRITE);
     bus_mem_control(WRITE);

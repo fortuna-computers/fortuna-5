@@ -13,13 +13,13 @@ uint16_t pc = 0;
 static fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 {
     fdbg_ComputerStatus status = fdbg_ComputerStatus_init_zero;
-    status.pc = 0;
+    status.pc = pc;
     return status;
 }
 
 static void reset(FdbgServer* server)
 {
-    z80_reset();
+    pc = z80_reset();
 }
 
 static fdbg_CycleResponse cycle(FdbgServer* server)
@@ -64,7 +64,10 @@ static fdbg_CycleResponse cycle(FdbgServer* server)
 
 static uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
 {
-    return 0;
+    (void) server;
+
+    pc = z80_single_step();
+    return pc;
 }
 
 static uint64_t next_instruction(FdbgServer* server)

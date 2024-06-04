@@ -5,7 +5,9 @@
 #include <stdint.h>
 
 void z80_init();
-void z80_reset();
 void z80_cycle();
+void z80_release_bus();
+uint16_t z80_reset();
+uint16_t z80_single_step();
 
 #endif
