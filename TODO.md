@@ -6,13 +6,14 @@
 
 # Computer
 
-- [ ] Create schematic
-- [ ] Create computer circuit
+- [x] Create schematic
+- [x] Create computer circuit
 - [ ] Create I/O setup
 - [ ] Debugger
-  - [ ] Ack
-  - [ ] RAM
-  - [ ] CPU
+  - [x] Ack
+  - [x] RAM
+  - [x] CPU
+    - [ ] Full step
 - [ ] Serial I/O (debugger)
 - [ ] Serial I/O (real hardware)
      

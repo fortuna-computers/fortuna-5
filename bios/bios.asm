@@ -10,3 +10,5 @@ stp:
 sr:
     nop
     ret
+
+    include nmi.z80

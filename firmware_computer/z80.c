@@ -6,7 +6,7 @@
 
 #include "bus.h"
 
-static uint8_t next_op = 0;
+static volatile uint8_t next_op = 0;
 
 void z80_init()
 {
@@ -72,7 +72,20 @@ uint16_t z80_single_step()
 
 uint16_t z80_full_step()
 {
-    return 0;
+    // call NMI subroutine
+    bus_nmi_set(0);
+    z80_single_step();
+    z80_single_step();
+    bus_nmi_set(1);
+
+    // run NMI subroutine until it reaches 'ret'
+    while (next_op != 0xc9)
+        z80_single_step();
+
+    // TODO - get registers
+
+    // return from NMI
+    return z80_single_step();
 }
 
 uint8_t z80_next_instruction_size()

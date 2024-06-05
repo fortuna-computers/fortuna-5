@@ -1,0 +1,26 @@
+TOP = 114h
+STACK_SAVE = 114h
+
+    org	66h
+
+	ld	(STACK_SAVE), sp
+	ld	sp, TOP
+
+	push	iy		; IY  = 0x112
+	push	ix		; IX  = 0x110
+	exx
+	push	hl		; HL' = 0x10e
+	push	de		; DE' = 0x10c
+	push	bc		; BC' = 0x10a
+	push	af		; AF' = 0x108
+	exx
+	push	hl		; HL  = 0x106
+	push	de		; DE  = 0x104
+	push	bc		; BC  = 0x102
+	push	af		; AF  = 0x100
+
+	ld	sp, (STACK_SAVE)
+	ret
+
+	; important: if any instructions are added here, the syscall initial location
+	;            must be changed
