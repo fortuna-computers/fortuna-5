@@ -1,6 +1,9 @@
     include nop.asm
 
-    nop
+    inc a
+    inc a
+    inc a
+    inc a
     call sr
 
 stp:

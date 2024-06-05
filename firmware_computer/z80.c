@@ -5,15 +5,19 @@
 #include <stddef.h>
 
 #include "bus.h"
+#include "ram.h"
 
-static volatile uint8_t next_op = 0;
+volatile Z80_Status z80;
 
 void z80_init()
 {
     bus_reset_set(0);
+    z80.pc = 0;
+    z80.next_op = 0;
+    z80.updated = false;
 }
 
-uint16_t z80_reset()
+void z80_reset()
 {
     bus_reset_set(0);
     for (uint8_t i = 0; i < 50; ++i)
@@ -26,7 +30,7 @@ uint16_t z80_reset()
     bus_busrq_set(1);
     bus_wait_set(1);  // pull-up
 
-    return z80_single_step();
+    z80_single_step();
 }
 
 void z80_cycle()
@@ -47,7 +51,7 @@ void z80_release_bus()
         z80_cycle();
 }
 
-uint16_t z80_single_step()
+void z80_single_step()
 {
     bus_busrq_set(1);   // make sure we're not requesting the bus
     z80_cycle();
@@ -55,8 +59,8 @@ uint16_t z80_single_step()
     while (bus_m1_get() != 0)
         z80_cycle();
 
-    uint16_t pc = bus_addr_get();
-    next_op = bus_data_get();
+    z80.pc = bus_addr_get();
+    z80.next_op = bus_data_get();
 
     z80_cycle();
 
@@ -65,12 +69,12 @@ uint16_t z80_single_step()
     bool combined_instruction = (previous_instruction == 0xcb || previous_instruction == 0xdd || previous_instruction == 0xed || previous_instruction == 0xfd);
     previous_instruction = bus_data_get();
     if (combined_instruction)
-        pc = z80_single_step();
+        z80_single_step();
 
-    return pc;
+    z80.updated = false;
 }
 
-uint16_t z80_full_step()
+void z80_full_step()
 {
     // call NMI subroutine
     bus_nmi_set(0);
@@ -79,13 +83,30 @@ uint16_t z80_full_step()
     bus_nmi_set(1);
 
     // run NMI subroutine until it reaches 'ret'
-    while (next_op != 0xc9)
+    while (z80.next_op != 0xc9)
         z80_single_step();
 
     // TODO - get registers
+    z80.af  = ram_get(0x100) | ((uint16_t) ram_get(0x101) << 8);
+    z80.bc  = ram_get(0x102) | ((uint16_t) ram_get(0x103) << 8);
+    z80.de  = ram_get(0x104) | ((uint16_t) ram_get(0x105) << 8);
+    z80.hl  = ram_get(0x106) | ((uint16_t) ram_get(0x107) << 8);
+    z80.afx = ram_get(0x108) | ((uint16_t) ram_get(0x109) << 8);
+    z80.bcx = ram_get(0x10a) | ((uint16_t) ram_get(0x10b) << 8);
+    z80.dex = ram_get(0x10c) | ((uint16_t) ram_get(0x10d) << 8);
+    z80.hlx = ram_get(0x10e) | ((uint16_t) ram_get(0x10f) << 8);
+    z80.ix  = ram_get(0x110) | ((uint16_t) ram_get(0x111) << 8);
+    z80.iy  = ram_get(0x112) | ((uint16_t) ram_get(0x113) << 8);
+    z80.sp  = ram_get(0x114) | ((uint16_t) ram_get(0x115) << 8);
+    z80.i = 0; // TODO
+
+    for (size_t i = 0; i < STACK_SZ; ++i)
+        z80.stack[i] = ram_get(z80.sp + i);
 
     // return from NMI
-    return z80_single_step();
+    z80_single_step();
+
+    z80.updated = true;
 }
 
 uint8_t z80_next_instruction_size()
@@ -94,12 +115,12 @@ uint8_t z80_next_instruction_size()
     static const uint8_t RST_OPS[] = { 0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF };
 
     for (size_t i = 0; i < sizeof(CALL_OPS); ++i) {
-        if (next_op == CALL_OPS[i]) {
+        if (z80.next_op == CALL_OPS[i]) {
             return 3;
         }
     }
     for (size_t i = 0; i < sizeof(RST_OPS); ++i) {
-        if (next_op == RST_OPS[i]) {
+        if (z80.next_op == RST_OPS[i]) {
             return 1;
         }
     }
