@@ -125,11 +125,11 @@ return {
             source_lines = {},
             symbols = {},
         }
-        ret.success = status
+        ret.success = status or false
         ret.result_info = stdout
 
         local f = assert(io.open("/tmp/stderr.txt", "r"))
-        ret.error = f:read("*all")
+        ret.error_info = f:read("*all")
         f:close()
 
         if status then
@@ -210,7 +210,6 @@ return {
         os.remove("stderr.txt")
         os.remove("rom.bin")
 
-        --[[
         local function dump(o)
             if type(o) == 'table' then
                 local s = '{ '
@@ -224,7 +223,6 @@ return {
             end
         end
         print(dump(ret))
-        ]]
 
         return ret
     end

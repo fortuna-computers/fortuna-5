@@ -6,10 +6,13 @@
 
 void bus_init()
 {
-    DDRL = 0b10101110;   // SIMCLK, A16, A17, A18, RESET
-    DDRG = (1<<DDG0) | (1<<DDG2);    // NMI, SCLK_ENA
+    DDRL = 0b10101110;                          // SIMCLK, A16, A17, A18, RESET
+    DDRG = (1<<DDG0) | (1<<DDG2);               // NMI, SCLK_ENA
     DDRB = (1<<DDB0) | (1<<DDB4) | (1<<DDB5);   // CS0..2
-    DDRC = (1<<DDC1) | (1<<DDC5) | (1<<DDC6);   // INT, BUSRQ, CWAIT
+    DDRC = (1<<DDC1) | (1<<DDC5);               // INT, BUSRQ
+    DDRJ = (1<<DDJ0);                           // CWAIT
+
+    bus_cwait_set(1);
 }
 
 void bus_data_control(ControlMode mode)
@@ -87,10 +90,11 @@ bool bus_nmi_get()   { return PING & (1<<PING0); }
 bool bus_int_get()   { return PINC & (1<<PINC1); }
 bool bus_iorq_get()  { return PIND & (1<<PIND0); }
 bool bus_busrq_get() { return PINC & (1<<PINC5); }
+bool bus_cwait_get() { return PINJ & (1<<PINJ0); }
 
 void bus_reset_set(bool v) { SET(L, 7, v) }
 void bus_nmi_set(bool v)   { SET(G, 0, v) }
 void bus_int_set(bool v)   { SET(C, 1, v) }
 void bus_clk_set(bool v)   { SET(L, 1, v) }
 void bus_busrq_set(bool v) { SET(C, 5, v) }
-void bus_wait_set(bool v)  { SET(D, 2, v) }
+void bus_cwait_set(bool v) { SET(J, 0, v) }

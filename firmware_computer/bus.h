@@ -37,12 +37,13 @@ bool     bus_nmi_get();
 bool     bus_int_get();
 bool     bus_iorq_get();
 bool     bus_busrq_get();
+bool     bus_cwait_get();
 
 void     bus_reset_set(bool v);
 void     bus_nmi_set(bool v);
 void     bus_int_set(bool v);
 void     bus_busrq_set(bool v);
 void     bus_clk_set(bool v);
-void     bus_wait_set(bool v);
+void     bus_cwait_set(bool v);
 
 #endif
