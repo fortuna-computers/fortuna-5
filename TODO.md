@@ -2,21 +2,29 @@
 
 - [x] Setup f-debugger
 - [x] Write base emulator
-- [ ] Serial I/O
 
 # Computer
 
 - [x] Create schematic
 - [x] Create computer circuit
-- [ ] Create I/O setup
-- [ ] Debugger
-  - [x] Ack
-  - [x] RAM
-  - [x] CPU
-    - [ ] Full step
-- [ ] Serial I/O (debugger)
-- [ ] Serial I/O (real hardware)
-     
+- [x] Ack
+- [x] RAM
+- [x] CPU
+  - [x] Full step
+
+# I/O logic
+
+- [ ] Write char to terminal
+  - [ ] Emulator
+  - [ ] Real computer (debugger)
+    - [ ] Add I/O chip
+- [ ] Read char from terminal
+  - [ ] Emulator
+  - [ ] Real computer (debugger)
+- [ ] Real computer
+  - [ ] Add clock chip
+  - [ ] Debugger logic
+
 # I/O board
 
 - [ ] Create schematic
