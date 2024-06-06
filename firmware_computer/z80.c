@@ -55,6 +55,11 @@ void z80_release_bus()
 
 static void z80_manage_iorq()
 {
+    /*
+    extern FdbgServer* server_;
+    fdbg_debug(server_, "IO");
+     */
+
     uint8_t port;
     uint8_t data;
 
@@ -75,9 +80,6 @@ static void z80_manage_iorq()
 
 void z80_single_step()
 {
-    // extern FdbgServer* server_;
-    // fdbg_debug(server_, "Step");
-
     bus_busrq_set(1);   // make sure we're not requesting the bus
     z80_cycle();
 
