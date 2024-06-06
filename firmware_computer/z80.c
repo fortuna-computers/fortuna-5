@@ -6,6 +6,7 @@
 
 #include "bus.h"
 #include "ram.h"
+#include "io.h"
 
 volatile Z80_Status z80;
 
@@ -51,13 +52,37 @@ void z80_release_bus()
         z80_cycle();
 }
 
+static void z80_manage_iorq()
+{
+    uint8_t port;
+    uint8_t data;
+
+    MemPins mp = bus_mem_get();
+    if (mp.wr == 0) {
+        port = bus_addr_get() & 0xff;
+        data = bus_data_get();
+        io_out(port, data);
+    } else if (mp.rd == 0) {
+        // TODO
+    }
+
+    bus_cwait_set(0);
+    while (bus_iorq_get() == 0)
+        z80_cycle();
+    bus_cwait_set(1);
+}
+
 void z80_single_step()
 {
     bus_busrq_set(1);   // make sure we're not requesting the bus
     z80_cycle();
 
-    while (bus_m1_get() != 0)
+    while (bus_m1_get() != 0) {
         z80_cycle();
+
+        if (bus_iorq_get() == 0)
+            z80_manage_iorq();
+    }
 
     z80.pc = bus_addr_get();
     z80.next_op = bus_data_get();

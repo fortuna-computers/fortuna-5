@@ -126,9 +126,12 @@ byte RdZ80(word Addr)
 
 void OutZ80(word Port,byte Value)
 {
-    if (Port == 0) {
-        char text[2] = { (char) Value, 0 };
-        fdbg_server_terminal_print(&server_, text);
+    switch (Port & 0xff) {
+        case 0x3: {
+            char text[2] = { (char) Value, 0 };
+            fdbg_server_terminal_print(&server_, text);
+            break;
+        }
     }
 }
 

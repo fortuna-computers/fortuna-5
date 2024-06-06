@@ -1,13 +1,10 @@
-#include <avr/interrupt.h>
-#include <util/delay.h>
-
 #include "libfdbg-server.h"
 #include "uart.h"
 #include "ram.h"
 #include "bus.h"
 #include "z80.h"
 
-static FdbgServer server_;
+FdbgServer server_;
 
 static fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 {

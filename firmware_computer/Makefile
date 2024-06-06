@@ -9,7 +9,7 @@ SERIAL_PORT=$(shell findserial.py 1a86 7523)
 PROJECT=fortuna5-dbg
 
 # Object files (one for each source file)
-OBJECTS=main.o uart.o bus.o ram.o z80.o \
+OBJECTS=main.o uart.o bus.o ram.o z80.o io.o \
        	fdbg/pb_common.o fdbg/pb_encode.o fdbg/pb_decode.o fdbg/protobuf/to-computer.nanopb.o \
         fdbg/protobuf/to-debugger.nanopb.o fdbg/libfdbg-server.o
 
