@@ -7,6 +7,7 @@
 #include "bus.h"
 #include "ram.h"
 #include "io.h"
+#include "libfdbg-server.h"
 
 volatile Z80_Status z80;
 
@@ -74,6 +75,9 @@ static void z80_manage_iorq()
 
 void z80_single_step()
 {
+    // extern FdbgServer* server_;
+    // fdbg_debug(server_, "Step");
+
     bus_busrq_set(1);   // make sure we're not requesting the bus
     z80_cycle();
 
