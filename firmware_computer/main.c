@@ -97,6 +97,7 @@ static uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
         z80_full_step();
     else
         z80_single_step();
+
     return z80.pc;
 }
 
