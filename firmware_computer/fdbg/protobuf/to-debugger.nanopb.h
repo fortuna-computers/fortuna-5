@@ -85,6 +85,10 @@ typedef struct _fdbg_RunStatus {
     fdbg_ComputerEvent events[36];
 } fdbg_RunStatus;
 
+typedef struct _fdbg_Debug {
+    char text[255];
+} fdbg_Debug;
+
 typedef struct _fdbg_ToDebugger {
     fdbg_Status status;
     pb_size_t which_message;
@@ -96,6 +100,7 @@ typedef struct _fdbg_ToDebugger {
         fdbg_BreakpointList breakpoint_list;
         fdbg_CycleResponse cycle_response;
         fdbg_RunStatus run_status;
+        fdbg_Debug debug;
     } message;
 } fdbg_ToDebugger;
 
@@ -108,6 +113,7 @@ extern "C" {
 #define _fdbg_Status_MIN fdbg_Status_OK
 #define _fdbg_Status_MAX fdbg_Status_CPU_INVALID_INSTRUCTION
 #define _fdbg_Status_ARRAYSIZE ((fdbg_Status)(fdbg_Status_CPU_INVALID_INSTRUCTION+1))
+
 
 
 
@@ -133,6 +139,7 @@ extern "C" {
 #define fdbg_ComputerEvent_init_default          {0, {fdbg_ComputerEvent_TerminalPrint_init_default}}
 #define fdbg_ComputerEvent_TerminalPrint_init_default {""}
 #define fdbg_RunStatus_init_default              {0, 0, 0, {fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default, fdbg_ComputerEvent_init_default}}
+#define fdbg_Debug_init_default                  {""}
 #define fdbg_ToDebugger_init_default             {_fdbg_Status_MIN, 0, {fdbg_AckResponse_init_default}}
 #define fdbg_AckResponse_init_zero               {0, 0, 0, 0}
 #define fdbg_WriteMemoryResponse_init_zero       {0}
@@ -144,6 +151,7 @@ extern "C" {
 #define fdbg_ComputerEvent_init_zero             {0, {fdbg_ComputerEvent_TerminalPrint_init_zero}}
 #define fdbg_ComputerEvent_TerminalPrint_init_zero {""}
 #define fdbg_RunStatus_init_zero                 {0, 0, 0, {fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero, fdbg_ComputerEvent_init_zero}}
+#define fdbg_Debug_init_zero                     {""}
 #define fdbg_ToDebugger_init_zero                {_fdbg_Status_MIN, 0, {fdbg_AckResponse_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -170,6 +178,7 @@ extern "C" {
 #define fdbg_RunStatus_running_tag               1
 #define fdbg_RunStatus_pc_tag                    2
 #define fdbg_RunStatus_events_tag                3
+#define fdbg_Debug_text_tag                      1
 #define fdbg_ToDebugger_status_tag               1
 #define fdbg_ToDebugger_ack_response_tag         2
 #define fdbg_ToDebugger_write_memory_response_tag 3
@@ -178,6 +187,7 @@ extern "C" {
 #define fdbg_ToDebugger_breakpoint_list_tag      6
 #define fdbg_ToDebugger_cycle_response_tag       7
 #define fdbg_ToDebugger_run_status_tag           8
+#define fdbg_ToDebugger_debug_tag                9
 
 /* Struct field encoding specification for nanopb */
 #define fdbg_AckResponse_FIELDLIST(X, a) \
@@ -247,6 +257,11 @@ X(a, STATIC,   REPEATED, MESSAGE,  events,            3)
 #define fdbg_RunStatus_DEFAULT NULL
 #define fdbg_RunStatus_events_MSGTYPE fdbg_ComputerEvent
 
+#define fdbg_Debug_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, STRING,   text,              1)
+#define fdbg_Debug_CALLBACK NULL
+#define fdbg_Debug_DEFAULT NULL
+
 #define fdbg_ToDebugger_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UENUM,    status,            1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (message,ack_response,message.ack_response),   2) \
@@ -255,7 +270,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (message,read_memory_response,message.read_me
 X(a, STATIC,   ONEOF,    MESSAGE,  (message,computer_status,message.computer_status),   5) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (message,breakpoint_list,message.breakpoint_list),   6) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (message,cycle_response,message.cycle_response),   7) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (message,run_status,message.run_status),   8)
+X(a, STATIC,   ONEOF,    MESSAGE,  (message,run_status,message.run_status),   8) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (message,debug,message.debug),   9)
 #define fdbg_ToDebugger_CALLBACK NULL
 #define fdbg_ToDebugger_DEFAULT NULL
 #define fdbg_ToDebugger_message_ack_response_MSGTYPE fdbg_AckResponse
@@ -265,6 +281,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (message,run_status,message.run_status),   8)
 #define fdbg_ToDebugger_message_breakpoint_list_MSGTYPE fdbg_BreakpointList
 #define fdbg_ToDebugger_message_cycle_response_MSGTYPE fdbg_CycleResponse
 #define fdbg_ToDebugger_message_run_status_MSGTYPE fdbg_RunStatus
+#define fdbg_ToDebugger_message_debug_MSGTYPE fdbg_Debug
 
 extern const pb_msgdesc_t fdbg_AckResponse_msg;
 extern const pb_msgdesc_t fdbg_WriteMemoryResponse_msg;
@@ -276,6 +293,7 @@ extern const pb_msgdesc_t fdbg_BreakpointList_msg;
 extern const pb_msgdesc_t fdbg_ComputerEvent_msg;
 extern const pb_msgdesc_t fdbg_ComputerEvent_TerminalPrint_msg;
 extern const pb_msgdesc_t fdbg_RunStatus_msg;
+extern const pb_msgdesc_t fdbg_Debug_msg;
 extern const pb_msgdesc_t fdbg_ToDebugger_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
@@ -289,6 +307,7 @@ extern const pb_msgdesc_t fdbg_ToDebugger_msg;
 #define fdbg_ComputerEvent_fields &fdbg_ComputerEvent_msg
 #define fdbg_ComputerEvent_TerminalPrint_fields &fdbg_ComputerEvent_TerminalPrint_msg
 #define fdbg_RunStatus_fields &fdbg_RunStatus_msg
+#define fdbg_Debug_fields &fdbg_Debug_msg
 #define fdbg_ToDebugger_fields &fdbg_ToDebugger_msg
 
 /* Maximum encoded size of messages (where known) */
@@ -299,6 +318,7 @@ extern const pb_msgdesc_t fdbg_ToDebugger_msg;
 #define fdbg_ComputerEvent_size                  11
 #define fdbg_ComputerStatus_size                 473
 #define fdbg_CycleResponse_size                  299
+#define fdbg_Debug_size                          257
 #define fdbg_OptionalUint_size                   13
 #define fdbg_ReadMemoryResponse_size             77
 #define fdbg_RunStatus_size                      481

@@ -70,6 +70,8 @@ uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
     RunZ80(&z80);
     next_op = ram[bank][z80.PC.W];
 
+    fdbg_debug(server, "Next: %02X", next_op);
+
     return z80.PC.W;
 }
 

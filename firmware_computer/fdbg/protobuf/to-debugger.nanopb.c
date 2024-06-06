@@ -36,6 +36,9 @@ PB_BIND(fdbg_ComputerEvent_TerminalPrint, fdbg_ComputerEvent_TerminalPrint, AUTO
 PB_BIND(fdbg_RunStatus, fdbg_RunStatus, 2)
 
 
+PB_BIND(fdbg_Debug, fdbg_Debug, 2)
+
+
 PB_BIND(fdbg_ToDebugger, fdbg_ToDebugger, 2)
 
 
