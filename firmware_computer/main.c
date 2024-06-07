@@ -1,4 +1,5 @@
-#include "libfdbg-server.h"
+#include <avr/interrupt.h>
+
 #include "uart.h"
 #include "bus.h"
 #include "z80.h"
@@ -13,6 +14,12 @@ int main()
     run_init();
     debugger_init();
 
-    for (;;)
-        debugger_step();
+    sei();
+
+    for (;;) {
+        if (run_state == R_RUN)
+            run_step();   // TODO - improve performance?
+        else
+            debugger_step();
+    }
 }
