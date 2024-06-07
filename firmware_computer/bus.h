@@ -38,6 +38,7 @@ bool     bus_int_get();
 bool     bus_iorq_get();
 bool     bus_busrq_get();
 bool     bus_cwait_get();
+bool     bus_sckl_ena_get();
 
 void     bus_reset_set(bool v);
 void     bus_nmi_set(bool v);

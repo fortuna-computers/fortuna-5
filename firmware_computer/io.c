@@ -1,8 +1,7 @@
 #include "io.h"
 
 #include "libfdbg-server.h"
-
-extern FdbgServer server_;
+#include "debugger.h"
 
 void io_out(uint8_t port, uint8_t data, bool from_debugger)
 {
@@ -10,7 +9,7 @@ void io_out(uint8_t port, uint8_t data, bool from_debugger)
         case 0x3: {   // write to UART
             if (from_debugger) {
                 char text[2] = { (char) data, 0 };
-                fdbg_server_terminal_print(&server_, text);
+                fdbg_server_terminal_print(debugger_server(), text);
                 break;
             }
         }

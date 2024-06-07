@@ -100,7 +100,7 @@ typedef struct _fdbg_ToDebugger {
         fdbg_BreakpointList breakpoint_list;
         fdbg_CycleResponse cycle_response;
         fdbg_RunStatus run_status;
-        fdbg_Debug debug;
+        fdbg_Debug debug; /* this can be sent at any time */
     } message;
 } fdbg_ToDebugger;
 
