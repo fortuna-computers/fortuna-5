@@ -14,14 +14,15 @@
 
 # I/O logic
 
-- [ ] Write char to terminal
-  - [ ] Emulator
-  - [ ] Real computer (debugger)
-    - [ ] Add I/O chip
-- [ ] Read char from terminal
-  - [ ] Emulator
-  - [ ] Real computer (debugger)
+- [x] Write char to terminal
+  - [x] Emulator
+  - [x] Real computer (debugger)
+    - [x] Add I/O chip (test)
+- [x] Read char from terminal
+  - [x] Emulator
+  - [x] Real computer (debugger)
 - [ ] Real computer
+  - [ ] Add I/O chip (real)
   - [ ] Add clock chip
   - [ ] Debugger logic
 

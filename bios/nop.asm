@@ -1,4 +1,6 @@
     nop
-    ld  a, 'H'
-    ; in a, (0x1)
+    nop
+    ld a, 'H'
     out (0x3), a
+    in a, (0x3)
+    nop

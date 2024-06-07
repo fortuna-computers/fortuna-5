@@ -67,14 +67,18 @@ static void z80_manage_iorq()
     if (mp.wr == 0) {
         port = bus_addr_get() & 0xff;
         data = bus_data_get();
-        io_out(port, data);
+        io_out(port, data, true);
     } else if (mp.rd == 0) {
-        // TODO
+        port = bus_addr_get() & 0xff;
+        data = io_in(port, true);
+        bus_data_control(WRITE);
+        bus_data_set(data);
     }
 
     bus_cwait_set(0);
     while (bus_iorq_get() == 0)
         z80_cycle();
+    bus_data_control(READ);
     bus_cwait_set(1);
 }
 

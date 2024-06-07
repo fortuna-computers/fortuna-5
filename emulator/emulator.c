@@ -3,9 +3,10 @@
 #include <time.h>
 
 #include "libfdbg-server.h"
+#include "io.h"
 #include "z80/Z80.h"
 
-static FdbgServer server_;
+FdbgServer server_;
 static uint8_t bank = 0;
 static uint8_t ram[8][64 * 1024];
 static uint8_t next_op = 0;
@@ -126,23 +127,12 @@ byte RdZ80(word Addr)
 
 void OutZ80(word Port,byte Value)
 {
-    switch (Port & 0xff) {
-        case 0x3: {
-            char text[2] = { (char) Value, 0 };
-            fdbg_server_terminal_print(&server_, text);
-            break;
-        }
-    }
+    io_out(Port, Value, true);
 }
 
 byte InZ80(word Port)
 {
-    if (Port == 0) {
-        uint8_t r = next_char;
-        next_char = 0;
-        return r;
-    }
-    return 0;
+    return io_in(Port, true);
 }
 
 word LoopZ80(Z80 *R)
