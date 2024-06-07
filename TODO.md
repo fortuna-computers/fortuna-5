@@ -22,7 +22,7 @@
   - [x] Emulator
   - [x] Real computer (debugger)
 - [ ] Real computer
-  - [ ] Add I/O chip (real)
+  - [x] Add I/O chip (real)
   - [ ] Add clock chip
   - [ ] Debugger logic
 

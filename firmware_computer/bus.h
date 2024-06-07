@@ -45,5 +45,6 @@ void     bus_int_set(bool v);
 void     bus_busrq_set(bool v);
 void     bus_clk_set(bool v);
 void     bus_cwait_set(bool v);
+void     bus_clock_led_set(bool v);
 
 #endif
