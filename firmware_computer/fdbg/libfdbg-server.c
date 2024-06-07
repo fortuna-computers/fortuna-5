@@ -1,7 +1,6 @@
 #include "libfdbg-server.h"
 
 #include <stdarg.h>
-#include <stdio.h>
 
 #define MIN(a,b) \
    ({ __typeof__ (a) _a = (a); \
