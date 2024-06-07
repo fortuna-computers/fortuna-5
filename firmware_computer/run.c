@@ -4,8 +4,9 @@
 #include <avr/io.h>
 
 #include "bus.h"
+#include "io.h"
 
-RunState run_state;
+volatile RunState run_state;
 
 void run_init()
 {
@@ -28,14 +29,40 @@ void run_init()
 
 void run_step()
 {
+    uint8_t port;
+    uint8_t data;
+
+    if (bus_iorq_get() == 0) {
+
+        MemPins mp = bus_mem_get();
+        if (mp.wr == 0) {
+            port = bus_addr_get() & 0xff;
+            data = bus_data_get();
+            io_out(port, data, false);
+        } else if (mp.rd == 0) {
+            port = bus_addr_get() & 0xff;
+            data = io_in(port, false);
+            bus_data_control(WRITE);
+            bus_data_set(data);
+        }
+
+        bus_cwait_set(0);
+        while (bus_iorq_get() == 0)
+            ;
+        bus_data_control(READ);
+        bus_cwait_set(1);
+    }
 }
 
 ISR(TIMER1_COMPA_vect)
 {
-    if (bus_sckl_ena_get() == 0) {  // debugger
+    if (run_state == R_DEBUG && bus_sckl_ena_get() == 0) {  // run
         bus_clock_led_set(1);
+        run_state = R_RUN;
 
-    } else {  // run
+    } else if (run_state == R_RUN && bus_sckl_ena_get() == 1) {  // debugger
         bus_clock_led_set(0);
+        run_state = R_DEBUG;
+
     }
 }

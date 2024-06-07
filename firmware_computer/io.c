@@ -1,6 +1,7 @@
 #include "io.h"
 
 #include "libfdbg-server.h"
+#include "uart.h"
 #include "debugger.h"
 
 void io_out(uint8_t port, uint8_t data, bool from_debugger)
@@ -11,6 +12,8 @@ void io_out(uint8_t port, uint8_t data, bool from_debugger)
                 char text[2] = { (char) data, 0 };
                 fdbg_server_terminal_print(debugger_server(), text);
                 break;
+            } else {
+                uart_write_byte(data);
             }
         }
     }

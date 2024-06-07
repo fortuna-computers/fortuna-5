@@ -7,7 +7,6 @@
 #include "bus.h"
 #include "ram.h"
 #include "io.h"
-#include "libfdbg-server.h"
 
 volatile Z80_Status z80;
 
@@ -55,11 +54,6 @@ void z80_release_bus()
 
 static void z80_manage_iorq()
 {
-    /*
-    extern FdbgServer* server_;
-    fdbg_debug(server_, "IO");
-     */
-
     uint8_t port;
     uint8_t data;
 

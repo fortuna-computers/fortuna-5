@@ -25,6 +25,7 @@
   - [x] Add I/O chip (real)
   - [ ] Add clock chip
   - [ ] Debugger logic
+- [ ] ROM upload
 
 # I/O board
 
