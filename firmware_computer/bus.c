@@ -13,6 +13,8 @@ void bus_init()
     DDRJ = (1<<DDJ0);                           // CWAIT
     DDRH = (1<<DDH6);                           // CLOCK_LED
 
+    PORTB |= (1<<PORTB6);  // SCLK_ENA pull up
+
     bus_cwait_set(1);
 }
 
