@@ -26,6 +26,9 @@
   - [ ] Add clock chip
   - [ ] Debugger logic
 - [ ] ROM upload
+  - [ ] Compile BIOS on build
+  - [ ] Generate binary on source file (current data: 1614)
+  - [ ] Record BIOS on initialization
 
 # I/O board
 
