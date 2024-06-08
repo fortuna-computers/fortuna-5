@@ -49,6 +49,7 @@ static void reset(FdbgServer* server)
     (void) server;
 
     z80_reset();
+    z80_single_step();
 }
 
 static fdbg_CycleResponse cycle(FdbgServer* server)

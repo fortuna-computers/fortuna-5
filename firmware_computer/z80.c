@@ -30,8 +30,6 @@ void z80_reset()
     bus_clk_set(0);
     bus_busrq_set(1);
     bus_cwait_set(1);  // pull-up
-
-    z80_single_step();
 }
 
 void z80_cycle()

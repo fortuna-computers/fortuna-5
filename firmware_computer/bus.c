@@ -11,7 +11,7 @@ void bus_init()
     DDRB = (1<<DDB0) | (1<<DDB4) | (1<<DDB5);   // CS0..2
     DDRC = (1<<DDC1) | (1<<DDC5);               // INT, BUSRQ
     DDRJ = (1<<DDJ0);                           // CWAIT
-    DDRH = (1<<DDH6);                           // CLOCK_LED
+    DDRH = (1<<DDH4) | (1<<DDH6);               // INIT_LED, CLOCK_LED
 
     PORTB |= (1<<PORTB6);  // SCLK_ENA pull up
 
@@ -102,4 +102,5 @@ void bus_int_set(bool v)       { SET(C, 1, v) }
 void bus_clk_set(bool v)       { SET(L, 1, v) }
 void bus_busrq_set(bool v)     { SET(C, 5, v) }
 void bus_cwait_set(bool v)     { SET(J, 0, v) }
+void bus_init_led_set(bool v)  { SET(H, 4, v) }
 void bus_clock_led_set(bool v) { SET(H, 6, v) }

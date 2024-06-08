@@ -1,10 +1,13 @@
 #include <avr/interrupt.h>
+#include <stdio.h>
 
 #include "uart.h"
 #include "bus.h"
 #include "z80.h"
 #include "run.h"
 #include "debugger.h"
+#include "init.h"
+#include "ram.h"
 
 int main()
 {
@@ -13,6 +16,8 @@ int main()
     z80_init();
     run_init();
     debugger_init();
+
+    initialize();
 
     sei();
 

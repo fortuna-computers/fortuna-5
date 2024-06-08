@@ -30,6 +30,10 @@
   - [ ] Generate binary on source file (current data: 1614)
   - [ ] Record BIOS on initialization
 
+# Improvements
+
+- [ ] Recreate build system
+
 # I/O board
 
 - [ ] Create schematic
