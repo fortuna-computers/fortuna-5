@@ -10,3 +10,4 @@ A powerful Z80 computer. It contains:
 - Wi-Fi and internet access
 - SPI interface for external boards
 - Serial (UART) interface
+- Runs both a custom operating system (Fortuna-OS) and CP/M
