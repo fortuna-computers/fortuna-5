@@ -21,18 +21,21 @@
 - [x] Read char from terminal
   - [x] Emulator
   - [x] Real computer (debugger)
-- [ ] Real computer
+- [x] Real computer
   - [x] Add I/O chip (real)
-  - [ ] Add clock chip
-  - [ ] Debugger logic
-- [ ] ROM upload
-  - [ ] Compile BIOS on build
-  - [ ] Generate binary on source file (current data: 1614)
-  - [ ] Record BIOS on initialization
+  - [x] Add clock chip
+  - [x] Debugger logic
+- [x] ROM upload
+  - [x] Compile BIOS on build
+  - [x] Generate binary on source file (current data: 1614)
+  - [x] Record BIOS on initialization
 
 # Improvements
 
+- [ ] Move ROM to AVR ROM instead of RAM
 - [ ] Recreate build system
+- [ ] Move to debug/run at will
+- [ ] Interrupts
 
 # I/O board
 
