@@ -67,20 +67,28 @@ OBJECTS=main.avr.o uart.avr.o bus.avr.o ram.avr.o z80.avr.o io.avr.o run.avr.o d
 # Rules
 #
 
-# TODO - protobuf files
-
 all: ${PROJECT}.hex
 
+# compile object files as *.avr.o
+
 %.avr.o: %.c
-	$(CC) -c -o $@ $^ ${CFLAGS} ${CPPFLAGS}
+	$(CC) -c -o $@ $< ${CFLAGS} ${CPPFLAGS}
+
+# generate BIOS header file
 
 ${BIOS}/bios.avr.h:
 	$(MAKE) -C ${BIOS}
 
 init.avr.o: ${BIOS}/bios.avr.h
 
-${OBJECTS}: ${FDBG_SERVER}/to-computer.nanopb.c
+# build the protobufs
+
+server_build:
 	$(MAKE) -C ${FDBG_SERVER} nanopb
+
+${OBJECTS}: | server_build
+
+# generate the microcontroller image
 
 ${PROJECT}.hex: ${PROJECT}.elf
 	avr-objcopy -j .text -j .data -O ihex -R .eeprom $< $@
