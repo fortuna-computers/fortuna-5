@@ -1,7 +1,8 @@
 FDBG_SRC = ../fortuna-debugger/src
+BIOS = ../bios
 
 CFLAGS = --std=gnu17
-CPPFLAGS = -Wall -Wextra -I${FDBG_SRC}/library/server -I${FDBG_SRC}/library/common -I${FDBG_SRC}/contrib/nanopb
+CPPFLAGS = -Wall -Wextra -I${FDBG_SRC}/library/server -I${FDBG_SRC}/library/common -I${FDBG_SRC}/contrib/nanopb -I${BIOS}
 LDFLAGS =
 
 ifdef RELEASE
@@ -11,6 +12,11 @@ else
 endif
 
 all: f5-emulator
+
+${BIOS}/bios.h:
+	$(MAKE) -C ${BIOS}
+
+emulator.o: ${BIOS}/bios.h
 
 ${FDBG_SRC}/library/server/libfdbg-server.a:
 	$(MAKE) -C ${FDBG_SRC}/library/server

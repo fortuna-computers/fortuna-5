@@ -4,6 +4,7 @@
 
 #include "libfdbg-server.h"
 #include "z80/Z80.h"
+#include "bios.h"
 
 FdbgServer server_;
 static uint8_t bank = 0;
@@ -124,9 +125,10 @@ byte RdZ80(word Addr)
     return ram[bank][Addr];
 }
 
-void OutZ80(word Port,byte Value)
+#include <stdio.h>
+void OutZ80(word Port, byte Value)
 {
-    switch (Port) {
+    switch (Port & 0xff) {
         case 0x3: {  // write
             char text[2] = { (char) Value, 0 };
             fdbg_server_terminal_print(&server_, text);
@@ -159,8 +161,12 @@ void PatchZ80(Z80 *R)
 int main()
 {
     srand(time(NULL));
-    for (size_t i = 0; i < 64 * 1024; ++i)
-        ram[0][i] = rand();
+    for (size_t i = 0; i < 64 * 1024; ++i) {
+        if (i < bios_bin_len)
+            ram[0][i] = bios_bin[i];
+        else
+            ram[0][i] = rand();
+    }
 
     fdbg_server_init_pc(&server_, 0x6ab9, EMULATOR_BAUD_RATE);
 
