@@ -33,7 +33,7 @@
 # Improvements
 
 - [x] Move ROM to AVR ROM instead of RAM
-- [ ] Recreate build system, resolve warnings
+- [x] Recreate build system, resolve warnings
 - [ ] Move to debug/run at will
 - [ ] Interrupts
 
