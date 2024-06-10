@@ -11,3 +11,10 @@ A powerful Z80 computer. It contains:
 - SPI interface for external boards
 - Serial (UART) interface
 - Runs both a custom operating system (Fortuna-OS) and CP/M
+
+# I/O ports
+
+| Port | Direction | Description |
+|------|-----------|-------------|
+| `03` | OUT       | Print char to serial output |
+| `03` | IN        | Return last inputted char on serial |

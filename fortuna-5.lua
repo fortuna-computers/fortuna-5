@@ -68,8 +68,8 @@ return {
     --
     microcontroller = {
         uart_baud_rate = 115200,   -- default UART baud rate
-        vendor_id = "2e8a",        -- used to autodetect the USB serial port
-        product_id = "000a",
+        vendor_id = "1a86",        -- used to autodetect the USB serial port
+        product_id = "7523",
         wait = 1000,
     },
 

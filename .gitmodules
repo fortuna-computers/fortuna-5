@@ -1,0 +1,3 @@
+[submodule "fortuna-debugger"]
+	path = fortuna-debugger
+	url = https://github.com/fortuna-computers/fortuna-debugger.git
