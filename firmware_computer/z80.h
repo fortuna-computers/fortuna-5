@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "common.h"
+#include "sizes.h"
 
 void    z80_init();
 
