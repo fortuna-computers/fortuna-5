@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 
 #include "libfdbg-server.h"
@@ -12,7 +13,6 @@ static uint8_t ram[8][64 * 1024];
 static uint8_t next_op = 0;
 static Z80 z80;
 static uint8_t next_char = 0;
-static uint16_t next_interrupt = -1;
 
 fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 {
@@ -120,7 +120,7 @@ void interrupt(FdbgServer* server, uint64_t number)
 {
     (void) server;
 
-    next_interrupt = number;
+    IntZ80(&z80, number);
 }
 
 void WrZ80(word Addr,byte Value)
@@ -157,11 +157,6 @@ byte InZ80(word Port)
 word LoopZ80(Z80 *R)
 {
     (void) R;
-    if (next_interrupt != (uint16_t) -1) {
-        uint8_t next = next_interrupt;
-        next_interrupt = -1;
-        return next;
-    }
     return INT_QUIT;
 }
 
