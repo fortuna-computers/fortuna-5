@@ -34,8 +34,9 @@
 
 - [x] Move ROM to AVR ROM instead of RAM
 - [x] Recreate build system, resolve warnings
-- [ ] Move to debug/run at will
 - [ ] Interrupts
+- [ ] Read keyboard
+- [ ] Move to debug/run at will
 
 # I/O board
 
