@@ -36,3 +36,7 @@ fortuna-5-backups
 \#auto_saved_files\#
 *.kicad_sch.lck
 bios.avr.h
+.DS_Store
+*.elf
+*.hex
+imgui.ini
