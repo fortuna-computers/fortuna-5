@@ -136,6 +136,11 @@ static void read_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t sz
         out_data[i] = ram_get(pos + i);
 }
 
+static void interrupt(FdbgServer* server, uint64_t number)
+{
+    z80_set_next_interrupt(number);
+}
+
 static uint16_t read_byte_async(FdbgServer* server)
 {
     (void) server;
@@ -159,6 +164,7 @@ static FdbgServerEvents events = {
         .read_memory = read_memory,
         .next_instruction = next_instruction,
         .cycle = cycle,
+        .interrupt = interrupt,
         // .on_keypress = on_keypress,
 };
 

@@ -16,6 +16,7 @@ void z80_init()
     z80.pc = 0;
     z80.next_op = 0;
     z80.updated = false;
+    z80.has_next_interrupt = 0;
 }
 
 void z80_reset()
@@ -56,13 +57,17 @@ static void z80_manage_iorq()
     uint8_t data;
 
     MemPins mp = bus_mem_get();
-    if (mp.wr == 0) {
+    if (mp.wr == 0 && mp.rd == 1) {   // output
         port = bus_addr_get() & 0xff;
         data = bus_data_get();
         io_out(port, data, true);
-    } else if (mp.rd == 0) {
+    } else if (mp.rd == 0 && mp.wr == 1) {  // input
         port = bus_addr_get() & 0xff;
         data = io_in(port, true);
+        bus_data_control(WRITE);
+        bus_data_set(data);
+    } else if (mp.wr == 1 && mp.rd == 1) {  // interrupt
+        data = z80.next_interrupt;
         bus_data_control(WRITE);
         bus_data_set(data);
     }
@@ -77,6 +82,7 @@ static void z80_manage_iorq()
 void z80_single_step()
 {
     bus_busrq_set(1);   // make sure we're not requesting the bus
+    bus_int_set(z80.has_next_interrupt ? 0 : 1);
     z80_cycle();
 
     while (bus_m1_get() != 0) {
@@ -153,4 +159,10 @@ uint8_t z80_next_instruction_size()
     }
 
     return 0;
+}
+
+void z80_set_next_interrupt(uint8_t number)
+{
+    z80.has_next_interrupt = true;
+    z80.next_interrupt = number;
 }

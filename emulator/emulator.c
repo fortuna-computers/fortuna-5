@@ -12,6 +12,7 @@ static uint8_t ram[8][64 * 1024];
 static uint8_t next_op = 0;
 static Z80 z80;
 static uint8_t next_char = 0;
+static uint16_t next_interrupt = -1;
 
 fdbg_ComputerStatus get_computer_status(FdbgServer* server)
 {
@@ -115,6 +116,13 @@ void read_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t sz, uint8
         out_data[i] = ram[bank][pos + i];
 }
 
+void interrupt(FdbgServer* server, uint64_t number)
+{
+    (void) server;
+
+    next_interrupt = number;
+}
+
 void WrZ80(word Addr,byte Value)
 {
     ram[bank][Addr] = Value;
@@ -125,7 +133,6 @@ byte RdZ80(word Addr)
     return ram[bank][Addr];
 }
 
-#include <stdio.h>
 void OutZ80(word Port, byte Value)
 {
     switch (Port & 0xff) {
@@ -150,6 +157,11 @@ byte InZ80(word Port)
 word LoopZ80(Z80 *R)
 {
     (void) R;
+    if (next_interrupt != (uint16_t) -1) {
+        uint8_t next = next_interrupt;
+        next_interrupt = -1;
+        return next;
+    }
     return INT_QUIT;
 }
 
@@ -178,6 +190,7 @@ int main()
             .read_memory = read_memory,
             .next_instruction = next_instruction,
             .on_keypress = on_keypress,
+            .interrupt = interrupt,
     };
 
     for (;;) {
