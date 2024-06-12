@@ -3,5 +3,9 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/fortuna-debugger" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fortuna-debugger/src/contrib/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fortuna-debugger/src/contrib/imgui-filebrowser" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fortuna-debugger/src/contrib/libtmt" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fortuna-debugger/src/contrib/nanopb" vcs="Git" />
   </component>
 </project>

@@ -53,6 +53,8 @@ void z80_release_bus()
 
 static void z80_manage_iorq()
 {
+    bus_init_led_set(1);
+
     uint8_t port;
     uint8_t data;
 
@@ -79,10 +81,29 @@ static void z80_manage_iorq()
     bus_cwait_set(1);
 }
 
+static void z80_do_interrupt()
+{
+    while (bus_m1_get() == 0)
+        z80_cycle();
+
+    bus_int_set(0);
+    z80_cycle();
+    bus_int_set(1);
+
+    while (bus_iorq_get() != 0)
+        z80_cycle();
+    z80_manage_iorq();
+}
+
 void z80_single_step()
 {
     bus_busrq_set(1);   // make sure we're not requesting the bus
-    bus_int_set(z80.has_next_interrupt ? 0 : 1);
+
+    if (z80.has_next_interrupt) {
+        z80_do_interrupt();
+        z80.has_next_interrupt = false;
+    }
+
     z80_cycle();
 
     while (bus_m1_get() != 0) {
@@ -105,6 +126,12 @@ void z80_single_step()
         z80_single_step();
 
     z80.updated = false;
+}
+
+void z80_set_next_interrupt(uint8_t number)
+{
+    z80.has_next_interrupt = true;
+    z80.next_interrupt = number;
 }
 
 void z80_full_step()
@@ -159,10 +186,4 @@ uint8_t z80_next_instruction_size()
     }
 
     return 0;
-}
-
-void z80_set_next_interrupt(uint8_t number)
-{
-    z80.has_next_interrupt = true;
-    z80.next_interrupt = number;
 }

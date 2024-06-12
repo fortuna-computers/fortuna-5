@@ -1,7 +1,8 @@
+    ei      ; fb
+    im 1    ; ed 56
+    nop     ; 00
     nop
-    ei
     nop
-    im 1
-    ld a, 'A'
-    out (0x3), a
+    ; ld a, 'A'
+    ; out (0x3), a
     nop
