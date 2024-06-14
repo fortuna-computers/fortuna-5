@@ -19,6 +19,7 @@ void    z80_set_next_interrupt(uint8_t number);
 typedef struct {
     uint16_t pc;
     uint8_t  next_op;
+    uint8_t  last_op;
     uint16_t af, bc, de, hl, afx, bcx, dex, hlx, ix, iy, sp;
     uint8_t  i;
     uint8_t  stack[STACK_SZ];

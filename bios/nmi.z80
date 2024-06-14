@@ -20,7 +20,7 @@ STACK_SAVE = 114h
 	push	af		; AF  = 0x100
 
 	ld	sp, (STACK_SAVE)
-	ret
+	retn
 
 	; important: if any instructions are added here, the syscall initial location
 	;            must be changed

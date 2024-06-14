@@ -14,6 +14,7 @@ void z80_init()
 {
     bus_reset_set(0);
     z80.pc = 0;
+    z80.last_op = 0;
     z80.next_op = 0;
     z80.updated = false;
     z80.has_next_interrupt = 0;
@@ -53,8 +54,6 @@ void z80_release_bus()
 
 static void z80_manage_iorq()
 {
-    bus_init_led_set(1);
-
     uint8_t port;
     uint8_t data;
 
@@ -114,6 +113,7 @@ void z80_single_step()
     }
 
     z80.pc = bus_addr_get();
+    z80.last_op = z80.next_op;
     z80.next_op = bus_data_get();
 
     z80_cycle();
@@ -142,9 +142,13 @@ void z80_full_step()
     z80_single_step();
     bus_nmi_set(1);
 
-    // run NMI subroutine until it reaches 'ret'
-    while (z80.next_op != 0xc9)
+    // run NMI subroutine until it reaches 'retn'
+    for (;;) {
         z80_single_step();
+        if (z80.pc == 0x7f)
+        // if (z80.last_op == 0xed && z80.next_op == 0x45) // retn
+            break;
+    }
 
     // TODO - get registers
     z80.af  = ram_get(0x100) | ((uint16_t) ram_get(0x101) << 8);
