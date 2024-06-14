@@ -1,17 +1,10 @@
-    include nop.asm
+start:
+    in  a, (0x3)
+    or  a, a
+    jr  z, start
 
-    inc a
-    inc a
-    inc a
-    inc a
-    call sr
+    out (0x3), a
+    jr  start
 
-stp:
-    jr  stp
-
-
-sr:
-    nop
-    ret
 
     include nmi.z80

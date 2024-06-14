@@ -4,7 +4,7 @@
 #include "uart.h"
 #include "debugger.h"
 
-uint8_t io_last_key = 0;
+volatile uint8_t io_last_key = 0;
 
 void io_out(uint8_t port, uint8_t data, bool from_debugger)
 {

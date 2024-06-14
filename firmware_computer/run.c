@@ -26,7 +26,8 @@ void run_init()
     // Output Compare Match A Interrupt Enable
     TIMSK1 |= (1 << OCIE1A);
 
-    // TODO - setup interrupt to listen UART
+    // setup interrupt to listen UART
+    UCSR0B |= (1<<RXCIE0);
 }
 
 void run_step()
@@ -47,6 +48,7 @@ void run_step()
             bus_data_control(WRITE);
             bus_data_set(data);
         }
+        // TODO - handle interrupt
 
         bus_cwait_set(0);
         while (bus_iorq_get() == 0)
@@ -67,4 +69,8 @@ ISR(TIMER1_COMPA_vect)
         run_state = R_DEBUG;
 
     }
+}
+
+ISR(USART0_RX_vect) {
+    io_last_key = UDR0;
 }
