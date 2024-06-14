@@ -25,6 +25,8 @@ void run_init()
     TCCR1B |= (1 << CS12);
     // Output Compare Match A Interrupt Enable
     TIMSK1 |= (1 << OCIE1A);
+
+    // TODO - setup interrupt to listen UART
 }
 
 void run_step()

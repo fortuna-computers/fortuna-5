@@ -5,6 +5,7 @@
 #include "bus.h"
 #include "ram.h"
 #include "uart.h"
+#include "io.h"
 
 static FdbgServer server_;
 
@@ -156,6 +157,14 @@ static void write_byte(FdbgServer* server, uint8_t data)
     uart_write_byte(data);
 }
 
+static void on_keypress(FdbgServer* server, const char* key)
+{
+    (void) server;
+
+    io_last_key = key[0];
+    // TODO - fire interrupt
+}
+
 static FdbgServerEvents events = {
         .get_computer_status = get_computer_status,
         .reset = reset,
@@ -165,7 +174,7 @@ static FdbgServerEvents events = {
         .next_instruction = next_instruction,
         .cycle = cycle,
         .interrupt = interrupt,
-        // .on_keypress = on_keypress,
+        .on_keypress = on_keypress,
 };
 
 void debugger_init()

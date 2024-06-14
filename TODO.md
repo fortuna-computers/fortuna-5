@@ -34,8 +34,9 @@
 
 - [x] Move ROM to AVR ROM instead of RAM
 - [x] Recreate build system, resolve warnings
-- [ ] Interrupts
-- [ ] Read keyboard
+- [x] Interrupts
+- [x] Read keyboard
+  - [ ] Read/write UART cycle in emulator, debugger and runner
 - [ ] Move to debug/run at will
 
 # I/O board

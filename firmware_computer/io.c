@@ -4,6 +4,8 @@
 #include "uart.h"
 #include "debugger.h"
 
+uint8_t io_last_key = 0;
+
 void io_out(uint8_t port, uint8_t data, bool from_debugger)
 {
     switch (port) {
@@ -21,9 +23,14 @@ void io_out(uint8_t port, uint8_t data, bool from_debugger)
 
 uint8_t io_in(uint8_t port, bool from_debugger)
 {
+    (void) from_debugger;
+
     switch (port) {
-        case 0x3:
-            return 0x42;
+        case 0x3: {
+            uint8_t r = io_last_key;
+            io_last_key = 0;
+            return r;
+        }
     }
     return 0;
 }

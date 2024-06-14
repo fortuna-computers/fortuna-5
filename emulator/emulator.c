@@ -136,7 +136,7 @@ byte RdZ80(word Addr)
 void OutZ80(word Port, byte Value)
 {
     switch (Port & 0xff) {
-        case 0x3: {  // write
+        case 0x3: {  // write serial
             char text[2] = { (char) Value, 0 };
             fdbg_server_terminal_print(&server_, text);
             break;
@@ -149,9 +149,16 @@ void OutZ80(word Port, byte Value)
 
 byte InZ80(word Port)
 {
-    (void) Port;
-    return 0;
-    // return io_in(Port, true);
+    switch (Port & 0xff) {
+        case 0x3: {  // read serial
+            uint8_t r = next_char;
+            next_char = 0;
+            return r;
+        }
+        default:
+            // return io_common_in(Port, true);
+            return 0;
+    }
 }
 
 word LoopZ80(Z80 *R)
