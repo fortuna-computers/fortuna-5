@@ -27,7 +27,7 @@ void run_init()
     TIMSK1 |= (1 << OCIE1A);
 
     // setup interrupt to listen UART
-    UCSR0B |= (1<<RXCIE0);
+    // UCSR0B |= (1<<RXCIE0);
 }
 
 void run_step()
