@@ -10,8 +10,7 @@ void bus_init()
     DDRG = (1<<DDG0) | (1<<DDG2);               // NMI, SCLK_ENA
     DDRB = (1<<DDB0) | (1<<DDB4) | (1<<DDB5);   // CS0..2
     DDRC = (1<<DDC1) | (1<<DDC5);               // INT, BUSRQ
-    DDRJ = (1<<DDJ0);                           // CWAIT
-    DDRH = (1<<DDH4) | (1<<DDH6);               // INIT_LED, CLOCK_LED
+    DDRH = (1<<DDH1) | (1<<DDH4) | (1<<DDH6);   // CWAIT, INIT_LED, CLOCK_LED
 
     PORTB |= (1<<PORTB6);  // SCLK_ENA pull up
 
@@ -93,7 +92,7 @@ bool bus_nmi_get()      { return PING & (1<<PING0); }
 bool bus_int_get()      { return PINC & (1<<PINC1); }
 bool bus_iorq_get()     { return PIND & (1<<PIND0); }
 bool bus_busrq_get()    { return PINC & (1<<PINC5); }
-bool bus_cwait_get()    { return PINJ & (1<<PINJ0); }
+bool bus_cwait_get()    { return PINH & (1<<PINH1); }
 bool bus_sckl_ena_get() { return PINB & (1<<PINB6); }
 
 void bus_reset_set(bool v)     { SET(L, 7, v) }
@@ -101,6 +100,6 @@ void bus_nmi_set(bool v)       { SET(G, 0, v) }
 void bus_int_set(bool v)       { SET(C, 1, v) }
 void bus_clk_set(bool v)       { SET(L, 1, v) }
 void bus_busrq_set(bool v)     { SET(C, 5, v) }
-void bus_cwait_set(bool v)     { SET(J, 0, v) }
+void bus_cwait_set(bool v)     { SET(H, 1, v) }
 void bus_init_led_set(bool v)  { SET(H, 4, v) }
 void bus_clock_led_set(bool v) { SET(H, 6, v) }
