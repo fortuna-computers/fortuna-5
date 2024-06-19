@@ -97,10 +97,14 @@ static uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
 {
     (void) server;
 
+    Z80_StepResult result;
     if (full)
-        z80_full_step();
+        result = z80_full_step();
     else
-        z80_single_step();
+        result = z80_single_step();
+
+    if (result == Z_TOO_MANY_CYCLES)
+        *status = fdbg_Status_INFINITE_LOOP;
 
     return z80.pc;
 }

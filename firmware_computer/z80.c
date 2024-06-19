@@ -94,8 +94,10 @@ static void z80_do_interrupt()
     z80_manage_iorq();
 }
 
-void z80_single_step()
+Z80_StepResult z80_single_step()
 {
+    z80.updated = false;
+
     bus_busrq_set(1);   // make sure we're not requesting the bus
 
     if (z80.has_next_interrupt) {
@@ -105,11 +107,15 @@ void z80_single_step()
 
     z80_cycle();
 
+    uint8_t i = 0;
     while (bus_m1_get() != 0) {
         z80_cycle();
 
         if (bus_iorq_get() == 0)
             z80_manage_iorq();
+
+        if (i++ > 30)
+            return Z_TOO_MANY_CYCLES;
     }
 
     z80.pc = bus_addr_get();
@@ -123,9 +129,9 @@ void z80_single_step()
     bool combined_instruction = (previous_instruction == 0xcb || previous_instruction == 0xdd || previous_instruction == 0xed || previous_instruction == 0xfd);
     previous_instruction = bus_data_get();
     if (combined_instruction)
-        z80_single_step();
+        return z80_single_step();
 
-    z80.updated = false;
+    return Z_OK;
 }
 
 void z80_set_next_interrupt(uint8_t number)
@@ -134,7 +140,7 @@ void z80_set_next_interrupt(uint8_t number)
     z80.next_interrupt = number;
 }
 
-void z80_full_step()
+Z80_StepResult z80_full_step()
 {
     // call NMI subroutine
     bus_nmi_set(0);
@@ -171,6 +177,8 @@ void z80_full_step()
     z80_single_step();
 
     z80.updated = true;
+
+    return Z_OK;
 }
 
 uint8_t z80_next_instruction_size()
