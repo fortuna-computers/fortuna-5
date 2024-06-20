@@ -8,6 +8,7 @@
 #include "debugger.h"
 #include "init.h"
 #include "ram.h"
+#include "debug.h"
 
 int main()
 {
@@ -16,6 +17,8 @@ int main()
     z80_init();
     run_init();
     debugger_init();
+    debug_init();
+    debug_print("Hello world!\n");
 
     initialize();
 
