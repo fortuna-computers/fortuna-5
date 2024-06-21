@@ -7,6 +7,7 @@
 #include "bus.h"
 #include "ram.h"
 #include "io.h"
+#include "debug.h"
 
 volatile Z80_Status z80;
 
@@ -32,6 +33,8 @@ void z80_reset()
     bus_clk_set(0);
     bus_busrq_set(1);
     bus_cwait_set(1);  // pull-up
+
+    DEBUG("Z80 reset.");
 }
 
 void z80_cycle()
@@ -40,6 +43,8 @@ void z80_cycle()
     _NOP();
     bus_clk_set(0);
     _NOP();
+
+    debug_putc('^');
 }
 
 void z80_release_bus()
@@ -50,10 +55,14 @@ void z80_release_bus()
     bus_busrq_set(0);
     while (bus_busak_get() != 0)
         z80_cycle();
+
+    DEBUG("Bus released.");
 }
 
 static void z80_manage_iorq()
 {
+    DEBUG("  handling I/O");
+
     uint8_t port;
     uint8_t data;
 
@@ -61,18 +70,22 @@ static void z80_manage_iorq()
     if (mp.wr == 0 && mp.rd == 1) {   // output
         port = bus_addr_get() & 0xff;
         data = bus_data_get();
+        DEBUG("    I/O output: [%02X] = %02X", port, data);
         io_out(port, data, true);
     } else if (mp.rd == 0 && mp.wr == 1) {  // input
         port = bus_addr_get() & 0xff;
         data = io_in(port, true);
+        DEBUG("    I/O input: %02X <- [%02X]", data, port);
         bus_data_control(WRITE);
         bus_data_set(data);
     } else if (mp.wr == 1 && mp.rd == 1) {  // interrupt
         data = z80.next_interrupt;
+        DEBUG("    I/O interrupt: %02X", data);
         bus_data_control(WRITE);
         bus_data_set(data);
     }
 
+    DEBUG("    waiting for end of I/O (IORQ goes high)");
     bus_cwait_set(0);
     while (bus_iorq_get() == 0)
         z80_cycle();
@@ -82,6 +95,7 @@ static void z80_manage_iorq()
 
 static void z80_do_interrupt()
 {
+    DEBUG("  sending interrupt signal");
     while (bus_m1_get() == 0)
         z80_cycle();
 
@@ -89,6 +103,7 @@ static void z80_do_interrupt()
     z80_cycle();
     bus_int_set(1);
 
+    DEBUG("    waiting for IORQ to go low");
     while (bus_iorq_get() != 0)
         z80_cycle();
     z80_manage_iorq();
@@ -96,6 +111,9 @@ static void z80_do_interrupt()
 
 Z80_StepResult z80_single_step()
 {
+    DEBUG("-----------------");
+    DEBUG("Z80 starting step");
+
     z80.updated = false;
 
     bus_busrq_set(1);   // make sure we're not requesting the bus
@@ -108,6 +126,7 @@ Z80_StepResult z80_single_step()
     z80_cycle();
 
     uint8_t i = 0;
+    DEBUG("  cycling until M1");
     while (bus_m1_get() != 0) {
         z80_cycle();
 
@@ -119,6 +138,8 @@ Z80_StepResult z80_single_step()
     }
 
     z80.pc = bus_addr_get();
+    DEBUG("  PC = %04X", z80.pc);
+
     z80.last_op = z80.next_op;
     z80.next_op = bus_data_get();
 
@@ -128,9 +149,12 @@ Z80_StepResult z80_single_step()
     static uint8_t previous_instruction = 0x00;
     bool combined_instruction = (previous_instruction == 0xcb || previous_instruction == 0xdd || previous_instruction == 0xed || previous_instruction == 0xfd);
     previous_instruction = bus_data_get();
-    if (combined_instruction)
+    if (combined_instruction) {
+        DEBUG("  combined instruction detected, doing another cycle");
         return z80_single_step();
+    }
 
+    DEBUG("Z80 step done");
     return Z_OK;
 }
 

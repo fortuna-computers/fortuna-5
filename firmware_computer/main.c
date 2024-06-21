@@ -18,9 +18,12 @@ int main()
     run_init();
     debugger_init();
     debug_init();
-    debug_print("Hello world!\n");
+
+    DEBUG("Microcontroller initialized.");
 
     initialize();
+
+    DEBUG("Computer initialized.");
 
     sei();
 

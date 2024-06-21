@@ -1,10 +1,30 @@
 #include "debug.h"
 
 #include <stddef.h>
+#include <stdio.h>
 
 #include <avr/io.h>
-#include <util/delay.h>
 #include <util/setbaud.h>
+
+#define BUF_MAX_SZ 255
+
+static void debug_print(const char* str)
+{
+#if DEBUG_ENABLE == 1
+    for (size_t i = 0; str[i]; ++i) {
+        loop_until_bit_is_set(UCSR3A, UDRE3);
+        UDR3 = str[i];
+    }
+#endif
+}
+
+void debug_putc(char c)
+{
+#if DEBUG_ENABLE == 1
+    loop_until_bit_is_set(UCSR3A, UDRE3);
+    UDR3 = c;
+#endif
+}
 
 void debug_init()
 {
@@ -23,15 +43,22 @@ void debug_init()
     UCSR3A &= ~(1 << U2X3);
 #endif
 
+    debug_print("\e[1;1H\e[2J");
 #endif
 }
 
-void debug_print(const char* str)
+void debug_printf(PGM_P fmt, ...)
 {
 #if DEBUG_ENABLE == 1
-    for (size_t i = 0; str[i]; ++i) {
-        loop_until_bit_is_set(UCSR3A, UDRE3);
-        UDR3 = str[i];
-    }
+    va_list args;
+    va_start(args, fmt);
+    int sz = vsnprintf_P(NULL, 0, fmt, args) + 1;
+    if (sz > BUF_MAX_SZ)
+        sz = BUF_MAX_SZ;
+    char buf[sz];
+    vsnprintf_P(buf, sz, fmt, args);
+    va_end(args);
+    debug_print(buf);
+    debug_print("\r\n");
 #endif
 }
