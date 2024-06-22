@@ -1,3 +1,6 @@
+    ld  a, '*'
+    out (0x3), a
+
 start:
     in  a, (0x3)
     or  a, a
