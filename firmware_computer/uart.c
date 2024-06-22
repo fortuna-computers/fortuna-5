@@ -5,6 +5,12 @@
 #include <avr/io.h>
 #include <util/setbaud.h>
 
+#define BUF_SZ 256
+
+static volatile uint8_t  queue[BUF_SZ] = {0};   // circular queue
+static volatile uint16_t queue_start = 0;
+static volatile uint16_t queue_end   = 0;
+
 void uart_init()
 {
     // set speed
@@ -20,6 +26,8 @@ void uart_init()
 #else
     UCSR0A &= ~(1 << U2X0);
 #endif
+
+    UCSR0B |= (1<<RXCIE0);   // setup RX interrupt
 }
 
 void uart_write_byte(uint8_t byte)
@@ -30,14 +38,18 @@ void uart_write_byte(uint8_t byte)
 
 uint16_t uart_read_byte_async()
 {
-    if (bit_is_set(UCSR0A, RXC0))
-        return UDR0;
-    else
+    if (queue_start == queue_end)
         return SERIAL_NO_DATA;
+
+    uint8_t r = queue[queue_start++];
+    if (queue_start == BUF_SZ)
+        queue_start = 0;
+    return r;
 }
 
-uint8_t uart_read_byte_sync()
+ISR(USART0_RX_vect)
 {
-    loop_until_bit_is_set(UCSR0A, RXC0);
-    return UDR0;
+    queue[queue_end++] = UDR0;
+    if (queue_end == BUF_SZ)
+        queue_end = 0;
 }

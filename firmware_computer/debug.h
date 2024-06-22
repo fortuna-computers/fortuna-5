@@ -3,7 +3,7 @@
 
 #include <avr/pgmspace.h>
 
-#define DEBUG_ENABLE 1
+#define DEBUG_ENABLE 0
 
 void debug_init();
 void debug_printf(PGM_P fmt, ...);

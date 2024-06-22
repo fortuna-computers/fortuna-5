@@ -71,6 +71,8 @@ ISR(TIMER1_COMPA_vect)
     }
 }
 
+/*
 ISR(USART0_RX_vect) {
     io_last_key = UDR0;
 }
+ */

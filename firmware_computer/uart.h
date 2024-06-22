@@ -6,6 +6,5 @@
 void     uart_init();
 void     uart_write_byte(uint8_t byte);
 uint16_t uart_read_byte_async();
-uint8_t  uart_read_byte_sync();
 
 #endif
