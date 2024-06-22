@@ -61,7 +61,7 @@ CXX = avr-g++
 OBJECTS=main.avr.o uart.avr.o bus.avr.o ram.avr.o z80.avr.o io.avr.o run.avr.o debugger.avr.o init.avr.o debug.o \
 		${FDBG_NANOPB}/pb_common.avr.o ${FDBG_NANOPB}/pb_encode.avr.o ${FDBG_NANOPB}/pb_decode.avr.o \
        	${FDBG_SERVER}/to-computer.nanopb.avr.o ${FDBG_SERVER}/to-debugger.nanopb.avr.o \
-       	${FDBG_SERVER}/libfdbg-server.avr.o
+       	${FDBG_SERVER}/libfdbg-server.avr.o ${FDBG_SERVER}/srvcomm.avr.o
 
 #
 # Rules
