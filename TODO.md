@@ -36,7 +36,10 @@
 - [x] Recreate build system, resolve warnings
 - [x] Interrupts
 - [x] Read keyboard
-  - [ ] Read/write UART cycle in emulator, debugger and runner
+  - [ ] Read/write UART cycle in...
+    - [x] Emulator
+    - [x] Debugger
+    - [ ] Runner
 - [ ] Move to debug/run at will
 
 # I/O board
