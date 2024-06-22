@@ -32,7 +32,7 @@ void ram_set(uint16_t pos, uint8_t data)
     bus_addr_control(READ);
     bus_data_control(READ);
 
-    DEBUG("[%04X] = %02X", pos, data);
+    // DEBUG("[%04X] = %02X", pos, data);
 }
 
 uint8_t ram_get(uint16_t pos)
@@ -52,7 +52,7 @@ uint8_t ram_get(uint16_t pos)
     bus_mem_control(READ);
     bus_addr_control(READ);
 
-    DEBUG("%02X <- [%04X]", data, pos);
+    // DEBUG("%02X <- [%04X]", data, pos);
 
     return data;
 }

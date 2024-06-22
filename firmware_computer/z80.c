@@ -109,10 +109,12 @@ static void z80_do_interrupt()
     z80_manage_iorq();
 }
 
-Z80_StepResult z80_single_step()
+Z80_StepResult z80_single_step(bool debug)
 {
-    DEBUG("-----------------");
-    DEBUG("Z80 starting step");
+    if (debug) {
+        DEBUG("-----------------");
+        DEBUG("Z80 starting step");
+    }
 
     z80.updated = false;
 
@@ -126,7 +128,8 @@ Z80_StepResult z80_single_step()
     z80_cycle();
 
     uint8_t i = 0;
-    DEBUG("  cycling until M1");
+    if (debug)
+        DEBUG("  cycling until M1");
     while (bus_m1_get() != 0) {
         z80_cycle();
 
@@ -138,7 +141,8 @@ Z80_StepResult z80_single_step()
     }
 
     z80.pc = bus_addr_get();
-    DEBUG("  PC = %04X", z80.pc);
+    if (debug)
+        DEBUG("  PC = %04X", z80.pc);
 
     z80.last_op = z80.next_op;
     z80.next_op = bus_data_get();
@@ -150,37 +154,48 @@ Z80_StepResult z80_single_step()
     bool combined_instruction = (previous_instruction == 0xcb || previous_instruction == 0xdd || previous_instruction == 0xed || previous_instruction == 0xfd);
     previous_instruction = bus_data_get();
     if (combined_instruction) {
-        DEBUG("  combined instruction detected, doing another cycle");
-        return z80_single_step();
+        if (debug)
+            DEBUG("  combined instruction detected, doing another cycle");
+        return z80_single_step(debug);
     }
 
-    DEBUG("Z80 step done");
+    if (debug)
+        DEBUG("Z80 step done");
     return Z_OK;
 }
 
 void z80_set_next_interrupt(uint8_t number)
 {
+    DEBUG("Next interrupt set: %d", z80.next_interrupt);
     z80.has_next_interrupt = true;
     z80.next_interrupt = number;
 }
 
 Z80_StepResult z80_full_step()
 {
+    DEBUG("//////////////");
+    DEBUG("Starting new FULL STEP");
+
     // call NMI subroutine
+    DEBUG("  Firing NMI");
     bus_nmi_set(0);
-    z80_single_step();
-    z80_single_step();
+    z80_single_step(true);
+    DEBUG("-----------------");
+    DEBUG("Back from main step");
+    z80_single_step(false);
     bus_nmi_set(1);
 
     // run NMI subroutine until it reaches 'retn'
+    DEBUG("  Running NMI routine");
     for (;;) {
-        z80_single_step();
+        z80_single_step(false);
         if (z80.pc == 0x7f)
         // if (z80.last_op == 0xed && z80.next_op == 0x45) // retn
             break;
     }
 
-    // TODO - get registers
+    // get registers
+    DEBUG("  Getting register values and stack");
     z80.af  = ram_get(0x100) | ((uint16_t) ram_get(0x101) << 8);
     z80.bc  = ram_get(0x102) | ((uint16_t) ram_get(0x103) << 8);
     z80.de  = ram_get(0x104) | ((uint16_t) ram_get(0x105) << 8);
@@ -198,10 +213,13 @@ Z80_StepResult z80_full_step()
         z80.stack[i] = ram_get(z80.sp + i);
 
     // return from NMI
-    z80_single_step();
+    DEBUG("  Returning from NMI");
+    z80_single_step(false);
 
     z80.updated = true;
 
+    DEBUG("FULL STEP complete");
+    DEBUG("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n");
     return Z_OK;
 }
 

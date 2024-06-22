@@ -16,7 +16,7 @@ void    z80_release_bus();
 void    z80_reset();
 uint8_t z80_next_instruction_size();
 
-Z80_StepResult z80_single_step();
+Z80_StepResult z80_single_step(bool debug);
 Z80_StepResult z80_full_step();
 
 void    z80_set_next_interrupt(uint8_t number);

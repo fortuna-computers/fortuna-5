@@ -50,7 +50,7 @@ static void reset(FdbgServer* server)
     (void) server;
 
     z80_reset();
-    z80_single_step();
+    z80_single_step(true);
 }
 
 static fdbg_CycleResponse cycle(FdbgServer* server)
@@ -101,7 +101,7 @@ static uint64_t step(FdbgServer* server, bool full, fdbg_Status* status)
     if (full)
         result = z80_full_step();
     else
-        result = z80_single_step();
+        result = z80_single_step(true);
 
     if (result == Z_TOO_MANY_CYCLES)
         *status = fdbg_Status_INFINITE_LOOP;
@@ -155,6 +155,12 @@ static uint16_t read_byte_async(FdbgServer* server)
     return (uint8_t) r;
 }
 
+static uint8_t read_byte_sync(FdbgServer* server)
+{
+    (void) server;
+    return uart_read_byte_sync();
+}
+
 static void write_byte(FdbgServer* server, uint8_t data)
 {
     (void) server;
@@ -186,6 +192,7 @@ void debugger_init()
     FdbgServerIOCallbacks cb = {
             .write_byte = write_byte,
             .read_byte_async = read_byte_async,
+            .read_byte_sync = read_byte_sync,
     };
     fdbg_server_init(&server_, 0x6ab9, cb);
 }

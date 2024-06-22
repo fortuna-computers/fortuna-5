@@ -35,3 +35,9 @@ uint16_t uart_read_byte_async()
     else
         return SERIAL_NO_DATA;
 }
+
+uint8_t uart_read_byte_sync()
+{
+    loop_until_bit_is_set(UCSR0A, RXC0);
+    return UDR0;
+}
