@@ -10,6 +10,8 @@ void run_init()
 {
 }
 
+static char c = 32;
+
 void run_step()
 {
     uint8_t port;
@@ -18,21 +20,24 @@ void run_step()
     if (bus_iorq_get() == 0) {
 
         MemPins mp = bus_mem_get();
-        if (mp.wr == 0) {
+        if (mp.wr == 0 && mp.rd == 1) {
             port = bus_addr_get() & 0xff;
             data = bus_data_get();
             io_out(port, data, false);
+            /*
         } else if (mp.rd == 0) {
             port = bus_addr_get() & 0xff;
-            data = io_in(port, false);
+            data = c++; //io_in(port, false);
             bus_data_control(WRITE);
             bus_data_set(data);
+             */
         }
         // TODO - handle interrupt
 
         bus_cwait_set(0);
         while (bus_iorq_get() == 0)
             ;
+        bus_data_set(0);
         bus_data_control(READ);
         bus_cwait_set(1);
     }

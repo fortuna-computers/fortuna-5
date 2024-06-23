@@ -3,7 +3,7 @@ VASM := ../vasm/vasmz80_oldstyle
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 	VASM := ${VASM}_macos
-	SED_FN := "''"
+	SED_FN := ''
 endif
 
 all: bios.bin bios.h bios.avr.h
@@ -19,4 +19,4 @@ bios.avr.h: bios.h
 	sed -i ${SED_FN} 's/unsigned char bios_bin\[\]/const unsigned char bios_bin\[\] PROGMEM/g' $@
 
 clean:
-	rm -f bios.bin bios.h bios.avr.h
+	rm -f bios.bin bios.h bios.avr.h*

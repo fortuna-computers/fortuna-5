@@ -47,9 +47,9 @@ uint16_t uart_read_byte_async()
     return r;
 }
 
-ISR(USART0_RX_vect)
+void uart_add_to_queue(uint8_t byte)
 {
-    queue[queue_end++] = UDR0;
+    queue[queue_end++] = byte;
     if (queue_end == BUF_SZ)
         queue_end = 0;
 }

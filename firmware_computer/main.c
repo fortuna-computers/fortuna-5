@@ -8,6 +8,7 @@
 #include "debugger.h"
 #include "init.h"
 #include "ram.h"
+#include "io.h"
 #include "debug.h"
 
 typedef enum { R_DEBUG, R_RUN } RunState;
@@ -65,3 +66,10 @@ ISR(TIMER1_COMPA_vect)   // called every 250ms to check state of the switch
     }
 }
 
+ISR(USART0_RX_vect)
+{
+    if (run_state == R_DEBUG)
+        uart_add_to_queue(UDR0);
+    else
+        io_last_key = UDR0;
+}
