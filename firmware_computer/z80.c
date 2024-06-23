@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <avr/cpufunc.h>
+#include <util/delay.h>
 #include <stddef.h>
 
 #include "bus.h"
@@ -26,6 +27,7 @@ void z80_reset()
     bus_reset_set(0);
     for (uint8_t i = 0; i < 50; ++i)
         z80_cycle();
+    _delay_ms(1);
     bus_reset_set(1);
 
     bus_nmi_set(1);

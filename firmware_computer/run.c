@@ -6,11 +6,18 @@
 #include "bus.h"
 #include "io.h"
 
-void run_init()
+void run_activate()
 {
-}
+    bus_reset_set(1);
+    bus_nmi_set(1);
+    bus_int_set(1);
+    bus_busrq_set(1);
+    bus_cwait_set(1);
 
-static char c = 32;
+    bus_data_control(READ);
+    bus_addr_control(READ);
+    bus_mem_control(READ);
+}
 
 void run_step()
 {
@@ -22,29 +29,20 @@ void run_step()
         MemPins mp = bus_mem_get();
         if (mp.wr == 0 && mp.rd == 1) {
             port = bus_addr_get() & 0xff;
-            data = bus_data_get();
+            data = PINA;    // read DATA bus
             io_out(port, data, false);
-            /*
-        } else if (mp.rd == 0) {
+
+        } else if (mp.rd == 0 && mp.wr == 1) {
             port = bus_addr_get() & 0xff;
-            data = c++; //io_in(port, false);
-            bus_data_control(WRITE);
-            bus_data_set(data);
-             */
+            data = io_in(port, false);
+            DDRA = 0xff;    // control DATA bus
+            PORTA = data;   // write to DATA bus
         }
+
         // TODO - handle interrupt
 
-        bus_cwait_set(0);
-        while (bus_iorq_get() == 0)
-            ;
-        bus_data_set(0);
-        bus_data_control(READ);
-        bus_cwait_set(1);
+        PORTH &= ~(1<<PH1);   // CWAIT = 0
+        DDRA = 0;             // release DATA bus
+        PORTH |= 1<<PH1;      // CWAIT = 1
     }
 }
-
-/*
-ISR(USART0_RX_vect) {
-    io_last_key = UDR0;
-}
- */

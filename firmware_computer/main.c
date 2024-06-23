@@ -31,7 +31,6 @@ int main()
     bus_init();
     uart_init();
     z80_init();
-    run_init();
     debugger_init();
     debug_init();
 
@@ -58,6 +57,7 @@ ISR(TIMER1_COMPA_vect)   // called every 250ms to check state of the switch
     if (run_state == R_DEBUG && bus_sckl_ena_get() == 0) {  // run
         bus_clock_led_set(1);
         run_state = R_RUN;
+        run_activate();
 
     } else if (run_state == R_RUN && bus_sckl_ena_get() == 1) {  // debugger
         bus_clock_led_set(0);
