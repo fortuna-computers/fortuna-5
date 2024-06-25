@@ -36,17 +36,29 @@
 - [x] Recreate build system, resolve warnings
 - [x] Interrupts
 - [x] Read keyboard
-  - [ ] Read/write UART cycle in...
+  - [x] Read/write UART cycle in...
     - [x] Emulator
     - [x] Debugger
-    - [ ] Runner
+    - [x] Runner
 - [ ] Move to debug/run at will
+
+# SDCard
+
+- [ ] Implement in Atmega (SPI + FatFs)
+- [ ] Control SD from debugger
+  - [ ] Protobuf commands
+  - [ ] UI
+  - [ ] Computer
+    - [ ] Emulator
+    - [ ] ATmega
+- [ ] Define SD commands
+  - [ ] Implement SD commands
+- [ ] Write boot code (assembly)
 
 # I/O board
 
 - [ ] Create schematic
 - [ ] Define I/O commands
-- [ ] Write SDCard code
 - [ ] Write VGA code
 
 # Fortuna code
