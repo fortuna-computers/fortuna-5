@@ -25,4 +25,4 @@ start:
     jr  start
 
 
-    ;include nmi.z80
+    include nmi.z80
