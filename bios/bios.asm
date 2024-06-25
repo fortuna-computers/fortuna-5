@@ -1,25 +1,27 @@
 hh:
-    ld  a, 'H'
+    ld  a, '1'
     out (0x3), a
 
-    ld  a, 'e'
+    ld  a, '2'
     out (0x3), a
 
-    ld  a, 'l'
+    ld  a, '3'
     out (0x3), a
 
-    ld  a, 'l'
+    ld  a, '4'
     out (0x3), a
 
-    ld  a, 'o'
+    ld  a, '5'
     out (0x3), a
 
 start:
     in  a, (0x3)
+
     or  a, a
     jr  z, start
 
     out (0x3), a
+
     jr  start
 
 

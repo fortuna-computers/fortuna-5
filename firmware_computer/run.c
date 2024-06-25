@@ -41,8 +41,8 @@ void run_step()
 
         // TODO - handle interrupt
 
-        PORTH &= ~(1<<PH1);   // CWAIT = 0
         DDRA = 0;             // release DATA bus
+        PORTH &= ~(1<<PH1);   // CWAIT = 0
         PORTH |= 1<<PH1;      // CWAIT = 1
     }
 }
