@@ -7,7 +7,6 @@
 
 void initialize()
 {
-    bus_init_led_set(1);
 
     bus_reset_set(0);
 
@@ -16,5 +15,4 @@ void initialize()
 
     z80_reset();
 
-    bus_init_led_set(0);
 }

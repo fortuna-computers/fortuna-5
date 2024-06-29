@@ -31,6 +31,8 @@ static void timer_init()
 int main()
 {
     bus_init();
+    bus_init_led_set(1);
+
     uart_init();
     z80_init();
     debugger_init();
@@ -46,6 +48,7 @@ int main()
 
     DEBUG("Computer initialized.");
 
+    bus_init_led_set(0);
     sei();
 
     for (;;) {
