@@ -8,7 +8,7 @@
 
 #define BUF_MAX_SZ 255
 
-static void debug_print(const char* str)
+__attribute__((unused)) static void debug_print(const char* str)
 {
 #if DEBUG_ENABLE == 1
     for (size_t i = 0; str[i]; ++i) {

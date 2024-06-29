@@ -10,6 +10,8 @@
 #include "ram.h"
 #include "io.h"
 #include "debug.h"
+#include "sdcard.h"
+#include "spi.h"
 
 typedef enum { R_DEBUG, R_RUN } RunState;
 volatile RunState run_state = R_DEBUG;
@@ -17,13 +19,13 @@ volatile RunState run_state = R_DEBUG;
 static void timer_init()
 {
     // setup timer to check if pushbutton was pressed (every 250ms - 4 Hz)
-    TCCR1A = 0;
-    TCCR1B = 0;
-    TCNT1 = 0;
-    OCR1A = 15624;            // 4 Hz (16000000/((15624+1)*256))
-    TCCR1B |= (1 << WGM12);   // CTC
-    TCCR1B |= (1 << CS12);    // Prescaler 256
-    TIMSK1 |= (1 << OCIE1A);  // Output Compare Match A Interrupt Enable
+    TCCR3A = 0;
+    TCCR3B = 0;
+    TCNT3 = 0;
+    OCR3A = 15624;            // 4 Hz (16000000/((15624+1)*256))
+    TCCR3B |= (1 << WGM32);   // CTC
+    TCCR3B |= (1 << CS32);    // Prescaler 256
+    TIMSK3 |= (1 << OCIE3A);  // Output Compare Match A Interrupt Enable
 }
 
 int main()
@@ -33,6 +35,8 @@ int main()
     z80_init();
     debugger_init();
     debug_init();
+    spi_init();
+    sdcard_init();   // TODO - check result and do something about it
 
     timer_init();
 
@@ -52,7 +56,7 @@ int main()
     }
 }
 
-ISR(TIMER1_COMPA_vect)   // called every 250ms to check state of the switch
+ISR(TIMER3_COMPA_vect)   // called every 250ms to check state of the switch
 {
     if (run_state == R_DEBUG && bus_sckl_ena_get() == 0) {  // run
         bus_clock_led_set(1);

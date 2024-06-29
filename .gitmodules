@@ -1,3 +1,6 @@
 [submodule "fortuna-debugger"]
 	path = fortuna-debugger
 	url = https://github.com/fortuna-computers/fortuna-debugger.git
+[submodule "firmware_computer/ulibSD"]
+	path = firmware_computer/ulibSD
+	url = https://github.com/1nv1/ulibSD.git

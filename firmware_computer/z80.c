@@ -111,9 +111,9 @@ static void z80_do_interrupt()
     z80_manage_iorq();
 }
 
-Z80_StepResult z80_single_step(bool debug)
+Z80_StepResult z80_single_step(bool debug_)
 {
-    if (debug) {
+    if (debug_) {
         DEBUG("-----------------");
         DEBUG("Z80 starting step");
     }
@@ -130,7 +130,7 @@ Z80_StepResult z80_single_step(bool debug)
     z80_cycle();
 
     uint8_t i = 0;
-    if (debug)
+    if (debug_)
         DEBUG("  cycling until M1");
     while (bus_m1_get() != 0) {
         z80_cycle();
@@ -143,7 +143,7 @@ Z80_StepResult z80_single_step(bool debug)
     }
 
     z80.pc = bus_addr_get();
-    if (debug)
+    if (debug_)
         DEBUG("  PC = %04X", z80.pc);
 
     z80.last_op = z80.next_op;
@@ -156,12 +156,12 @@ Z80_StepResult z80_single_step(bool debug)
     bool combined_instruction = (previous_instruction == 0xcb || previous_instruction == 0xdd || previous_instruction == 0xed || previous_instruction == 0xfd);
     previous_instruction = bus_data_get();
     if (combined_instruction) {
-        if (debug)
+        if (debug_)
             DEBUG("  combined instruction detected, doing another cycle");
-        return z80_single_step(debug);
+        return z80_single_step(debug_);
     }
 
-    if (debug)
+    if (debug_)
         DEBUG("Z80 step done");
     return Z_OK;
 }

@@ -12,7 +12,7 @@ void debug_putc(char c);
 #if DEBUG_ENABLE == 1
 #  define DEBUG(fmt, ...) debug_printf(PSTR(fmt), ##__VA_ARGS__)
 #else
-#  define DEBUG(fmt, ...)
+#  define DEBUG(fmt, ...) {}
 #endif
 
 #endif
