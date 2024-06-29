@@ -44,11 +44,13 @@
 
 # SDCard
 
-- [ ] Implement in Atmega (SPI + FatFs)
+- [ ] Load data in Memory 1
+  - [ ] Implement SPI/SD in Atmega
+  - [ ] Emulator
 - [ ] Control SD from debugger
   - [ ] Protobuf commands
   - [ ] UI
-  - [ ] Computer
+  - [ ] Computer (FsFat)
     - [ ] Emulator
     - [ ] ATmega
 - [ ] Define SD commands
@@ -67,3 +69,7 @@
 - [ ] Base operating system
   - [ ] BASIC
 - [ ] CP/M mode
+
+# Page
+- [ ] Create page
+- [ ] Create videos

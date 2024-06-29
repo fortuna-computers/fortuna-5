@@ -28,6 +28,7 @@ return {
         -- just the physical size.
         memories = {
             { name = "RAM", size = 64 * 1024 },
+            { name = "SD Card", size = 4 * 1024 * 1024 * 1024 },
         },
 
         -- List of registers. The register count and order must match the list of register

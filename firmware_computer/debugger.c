@@ -126,8 +126,10 @@ static bool write_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t* 
     (void) nr;
     (void) first_failed;
 
-    for (size_t i = 0; i < sz; ++i)
-        ram_set(pos + i, data[i]);
+    if (nr == 0) {
+        for (size_t i = 0; i < sz; ++i)
+            ram_set(pos + i, data[i]);
+    }
 
     return true;
 }
@@ -137,8 +139,10 @@ static void read_memory(FdbgServer* server, uint8_t nr, uint64_t pos, uint8_t sz
     (void) server;
     (void) nr;
 
-    for (size_t i = 0; i < sz; ++i)
-        out_data[i] = ram_get(pos + i);
+    if (nr == 0) {
+        for (size_t i = 0; i < sz; ++i)
+            out_data[i] = ram_get(pos + i);
+    }
 }
 
 static void interrupt(FdbgServer* server, uint64_t number)

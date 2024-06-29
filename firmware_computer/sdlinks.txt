@@ -1,0 +1,5 @@
+https://www.seanet.com/~karllunt/sdcardlib.html
+
+--> https://www.seanet.com/~karllunt/sdcardlib.html
+--> https://github.com/bitfixer/bf-avr-sdlib
+--> https://github.com/1nv1/ulibSD
