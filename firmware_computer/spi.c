@@ -2,9 +2,12 @@
 
 #include <avr/io.h>
 
+#include "debug.h"
+
 void spi_init()
 {
     DDRB |= (1<<DDB0) | (1<<DDB1) | (1<<DDB2) | (1<<DDB4) | (1<<DDB5);  // SD_CS, SCK, MOSI, CS1, CS2
+    DDRB &= ~(1<<DDB3);  // MISO
     SPCR = (1<<MSTR) | (1<<SPE) | (1<<SPR1) | (1<<SPR0);   // speed f/64, master, SPI enable
     SPSR &= ~(1<<SPI2X);
 }
@@ -50,5 +53,16 @@ uint8_t spi_xchg(uint8_t data)
 {
     SPDR = data;
     while(!(SPSR & (1<<SPIF)));  // wait for transmission
-    return SPDR;
+    uint8_t v = SPDR;
+#if DEBUG_SPI
+    if (data == 0xff)
+        DEBUGN(ANSI_GREEN "." ANSI_RESET);
+    else
+        DEBUGN(ANSI_GREEN "[%02X]" ANSI_RESET, data);
+    if (v == 0xff)
+        DEBUGN(ANSI_RED "." ANSI_RESET);
+    else
+        DEBUGN(ANSI_RED "[%02X]" ANSI_RESET, v);
+#endif
+    return v;
 }

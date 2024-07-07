@@ -1,5 +1,6 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
+#include <util/delay.h>
 
 #include "uart.h"
 #include "bus.h"
@@ -12,11 +13,12 @@
 #include "debug.h"
 #include "sdcard.h"
 #include "spi.h"
+#include "timer.h"
 
 typedef enum { R_DEBUG, R_RUN } RunState;
 volatile RunState run_state = R_DEBUG;
 
-static void timer_init()
+static void switch_check_init()
 {
     // setup timer to check if pushbutton was pressed (every 250ms - 4 Hz)
     TCCR3A = 0;
@@ -38,9 +40,10 @@ int main()
     debugger_init();
     debug_init();
     spi_init();
-    sdcard_init();   // TODO - check result and do something about it
 
-    timer_init();
+    // sdcard_init();   // TODO - check result and do something about it
+
+    switch_check_init();
 
     DEBUG("Microcontroller initialized.");
 

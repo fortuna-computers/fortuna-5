@@ -59,6 +59,5 @@ void debug_printf(PGM_P fmt, ...)
     vsnprintf_P(buf, sz, fmt, args);
     va_end(args);
     debug_print(buf);
-    debug_print("\r\n");
 #endif
 }
