@@ -1,0 +1,13 @@
+main:
+
+	;
+	; print welcome message
+	;
+
+	ld	hl, .welcome
+	call	PRINT
+
+.halt:	jr	.halt
+
+.welcome:
+	asciiz	13, 10, "Welcome to Fortuna 5!", 13, 10

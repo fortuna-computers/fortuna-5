@@ -9,7 +9,7 @@ endif
 all: bios.bin bios.h bios.avr.h
 
 bios.bin: $(wildcard *.z80)
-	${VASM} -chklabels -Llo -ignore-mult-inc -nosym -x -Fbin -o $@ bios.asm
+	${VASM} -chklabels -Llo -ignore-mult-inc -nosym -x -Fbin -o $@ bios.z80
 
 bios.h: bios.bin
 	xxd -i $^ > $@

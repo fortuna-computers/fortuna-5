@@ -1,0 +1,28 @@
+SERIAL = 0x3
+
+	;===========================================
+	;
+	; Print character in A to serial
+	;
+	;===========================================
+PUTC:
+	out	(SERIAL), a
+	ret
+
+	;===========================================
+	;
+	; Print null-terminated string in HL
+	;  - trashes A, HL
+	;
+	;===========================================
+
+PRINT:
+	ld	a, (hl)		; load next char
+	cp	a, 0		; if null, return
+	ret	z
+
+	call	PUTC		; print char
+	inc	hl		; increment buffer pointer, and go to next
+	jr	PRINT
+
+
