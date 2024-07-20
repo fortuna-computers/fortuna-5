@@ -1,13 +1,23 @@
+BUFFER_SZ   = 128
+BUFFER_ADDR = 2020h
+
 main:
-
-	;
-	; print welcome message
-	;
-
-	ld	hl, .welcome
+	ld	hl, str_welcome		; print welcome message
 	call	PRINT
 
-.halt:	jr	.halt
+prompt:
+	ld	hl, str_prompt		; print prompt
+	call	PRINT
 
-.welcome:
-	asciiz	13, 10, "Welcome to Fortuna 5!", 13, 10
+	ld	a, BUFFER_SZ		; read input from the user
+	ld	hl, BUFFER_ADDR
+	call	INPUT
+
+	jr	prompt
+	
+	;
+	; strings
+	;
+
+str_welcome:	asciiz	13, 10, "Welcome to Fortuna 5!", 13, 10
+str_prompt: 	asciiz	"> "

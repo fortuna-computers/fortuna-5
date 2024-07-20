@@ -11,6 +11,15 @@ PUTC:
 
 	;===========================================
 	;
+	; Wait for a character in serial input, and place it in A
+	;
+	;===========================================
+GETCW:
+	in	a, (SERIAL)
+	ret
+
+	;===========================================
+	;
 	; Print null-terminated string in HL
 	;  - trashes A, HL
 	;
@@ -25,4 +34,62 @@ PRINT:
 	inc	hl		; increment buffer pointer, and go to next
 	jr	PRINT
 
+	;===========================================
+	;
+	; SYS_INPUT - Input string from the user
+	;   A - max string size (trashes)
+	;   HL - buffer location in memory
+	;
+	;===========================================
 
+INPUT:
+	push	bc			; save registers
+	push	hl
+	ld	b, 0			; current char count
+
+.next_char:
+	call	GETCW
+
+.check_for_backspace:
+	cp	127			; was BACKSPACE pressed?
+	jr	nz, .check_for_enter
+
+	ld	a, b
+	cp	0			; if on beginning of string...
+	jr	z, .next_char		;   don't do anything
+
+	push	hl			; print backspace
+	ld	hl, .backspace
+	call	PRINT
+	pop	hl
+
+	dec	hl			; remove char from string
+	dec	b
+	jr	.next_char
+
+.check_for_enter:
+	cp	13			; was ENTER pressed?
+	jr	nz, .add_char
+
+	call	.print_enter		; if so, - print enter
+	ld	(hl), 0			;        - add null pointer
+	pop	hl			;        - restore registers
+	pop	bc
+	ret				;        - return
+
+.add_char:
+	call	PUTC			; add character
+	ld	(hl), a
+	inc	hl
+	inc	b
+	jr	.next_char
+
+.print_enter:
+	ld	a, 13
+	call	PUTC
+	ld	a, 10
+	call	PUTC
+	ret
+
+.backspace:
+	asciiz	8, ' ', 8
