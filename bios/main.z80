@@ -12,6 +12,7 @@ prompt:
 	ld	a, BUFFER_SZ		; read input from the user
 	ld	hl, BUFFER_ADDR
 	call	INPUT
+	call	PRINT
 
 	jr	prompt
 	

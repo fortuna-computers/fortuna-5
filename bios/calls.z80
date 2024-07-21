@@ -6,7 +6,7 @@ SERIAL = 0x3
 	;
 	;===========================================
 PUTC:
-	out	(SERIAL), a
+	out	(SERIAL), a		; write character to serial
 	ret
 
 	;===========================================
@@ -15,7 +15,9 @@ PUTC:
 	;
 	;===========================================
 GETCW:
-	in	a, (SERIAL)
+	in	a, (SERIAL)		; read character from serial
+	cp	0			; try again if zero
+	jr	z, GETCW
 	ret
 
 	;===========================================
@@ -52,8 +54,13 @@ INPUT:
 
 .check_for_backspace:
 	cp	127			; was BACKSPACE pressed?
-	jr	nz, .check_for_enter
+	jr	z, .is_backspace
+	cp	8
+	jr	z, .is_backspace
 
+	jr	.check_for_enter
+
+.is_backspace:
 	ld	a, b
 	cp	0			; if on beginning of string...
 	jr	z, .next_char		;   don't do anything
